@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
@@ -18,6 +19,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Aix-en-Provence : Le Mystère');
+    expect(compiled.querySelector('lumen-title')?.textContent).toContain('Aix-en-Provence : Le Mystère');
   });
 });

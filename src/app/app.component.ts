@@ -1,10 +1,13 @@
 import {Component, inject} from '@angular/core';
 import {GameService} from './core/services/game/game.service';
+import {StepComponent} from './features/step/step.component';
+import {PlayerComponent} from './features/player/player.component';
+import {TitleComponent} from './shared/ui/title/title.component';
 
 @Component({
-  selector: 'app-root',
+  selector: 'lumen-root',
   standalone: true,
-  imports: [],
+  imports: [StepComponent, PlayerComponent, TitleComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

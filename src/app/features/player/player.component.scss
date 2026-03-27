@@ -1,0 +1,27 @@
+.player-info {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  flex-wrap: wrap;
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .label {
+      font-size: 0.875rem;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+  }
+}
+

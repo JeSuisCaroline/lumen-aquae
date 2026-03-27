@@ -1,23 +1,11 @@
 <div class="game-container">
   <header>
-    <h1>Aix-en-Provence : Le Mystère</h1>
-    <div class="stats">💰 Florins : {{ gameService.gold }}</div>
+    <lumen-title text="Aix-en-Provence : Le Mystère" level="h1"></lumen-title>
+    <lumen-player></lumen-player>
   </header>
 
   @if (gameService.currentStep) {
-    <main>
-      <h2>{{ gameService.currentStep.title }}</h2>
-      <p>{{ gameService.currentStep.description }}</p>
-
-      <div class="choices">
-<!--        TODO : voir si let nécessaire-->
-        @for (choice of gameService.currentStep.choices || []; track choice.id) {
-          <button (click)="gameService.goToStep(choice.nextStepId, choice.gainGold || 0)">
-            {{ choice.text }}
-          </button>
-        }
-      </div>
-    </main>
+    <lumen-step></lumen-step>
   }
 
 </div>

@@ -1,0 +1,18 @@
+<main>
+  <lumen-title
+    [text]="gameService.currentStep?.title || ''"
+    level="h2"
+    [description]="gameService.currentStep?.description">
+  </lumen-title>
+
+  <div class="choices">
+    @for (choice of gameService.currentStep?.choices || []; track choice.id) {
+      <lumen-button
+        [text]="choice.text"
+        variant="primary"
+        (click)="gameService.goToStep(choice.nextStepId, choice.gainGold || 0)">
+      </lumen-button>
+    }
+  </div>
+</main>
+
