@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { InventoryComponent } from './inventory.component';
 
-describe('InventoryComponent', () => {
+describe('PlayerComponent', () => {
   let component: InventoryComponent;
   let fixture: ComponentFixture<InventoryComponent>;
 
@@ -11,14 +11,23 @@ describe('InventoryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [InventoryComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(InventoryComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have gameService injected', () => {
+    expect(component.gameService).toBeTruthy();
+  });
+
+  it('should display gold amount', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Florins');
   });
 });

@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { GameService } from '../../core/services/game/game.service';
 
 @Component({
   selector: 'lumen-inventory',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './inventory.component.html',
-  styleUrl: './inventory.component.scss',
+  styleUrls: ['./inventory.component.scss']
 })
 export class InventoryComponent {
-
+  gameService = inject(GameService);
 }

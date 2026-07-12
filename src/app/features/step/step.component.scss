@@ -1,38 +1,42 @@
-main {
-  padding: 2rem;
-}
+.step-container {
+  backdrop-filter: blur(12px); // L'effet de flou "verre"
+  border-radius: 25px;
+  padding: 25px;
+  margin: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  text-align: center;
 
-h2 {
-  margin-bottom: 1rem;
-}
+  background: #ff930f;
+  background-blend-mode: multiply;
+  background: linear-gradient(to top, #ff930f, #ffcc33);
 
-p {
-  margin-bottom: 2rem;
-  line-height: 1.6;
-}
-
-.choices {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  button {
-    padding: 0.75rem 1.5rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-
-    &:active {
-      background-color: #004085;
-    }
+  .step-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--lumen-blue); // Ton bleu défini plus tôt
   }
-}
 
+  .step-title {
+    font-size: 1.5rem;
+    color: #4480d0;
+    margin-bottom: 10px;
+  }
+
+  .step-description {
+    font-weight: bolder;
+  }
+
+  .step-gap {
+    height: 1.25rem;
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+}

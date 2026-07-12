@@ -37,12 +37,14 @@
     "@angular/ssr": "^21.1.4",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zone.js": "^0.15.0"
   },
   "devDependencies": {
     "@angular/build": "^21.1.4",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.0",
+    "@angular/language-service": "^21.2.4",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
     "@vitest/coverage-v8": "^4.1.2",
