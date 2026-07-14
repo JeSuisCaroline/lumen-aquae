@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { StepComponent } from './step.component';
@@ -9,7 +11,8 @@ describe('StepComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StepComponent]
+      imports: [StepComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     })
       .compileComponents();
 

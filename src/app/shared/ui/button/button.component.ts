@@ -12,11 +12,11 @@ export class ButtonComponent {
   @Input() text: string = '';
   @Input() disabled: boolean = false;
   @Input() variant: 'primary' | 'secondary' | 'danger' = 'primary';
-  @Output() click = new EventEmitter<void>();
+  @Output() clicked = new EventEmitter<void>();
 
   onClick() {
     if (!this.disabled) {
-      this.click.emit();
+      this.clicked.emit();
     }
   }
 }

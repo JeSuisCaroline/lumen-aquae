@@ -1,0 +1,1 @@
+Ces statues, questionne-t-il en désignant les trois statues de marbre ornant le sommet de la fontaine, guident les voyageurs. Celle qui regarde vers la route de Viana (*Avignon*), que symbolise-t-elle ?

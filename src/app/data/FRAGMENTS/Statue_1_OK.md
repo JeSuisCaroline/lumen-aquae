@@ -1,0 +1,1 @@
+C'était la bonne réponse. Tu vois le garde hocher la tête, presque déçu de ne pas t'avoir piégé.

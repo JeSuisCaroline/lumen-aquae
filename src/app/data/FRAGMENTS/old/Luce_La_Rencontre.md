@@ -1,0 +1,2 @@
+
+Une voix autoritaire s'élève derrière toi. Un jeune homme à l'allure vive s'interpose entre toi et la milice. "Mais enfin, qu'est-ce que tu fabriques encore ?" s'exclame-t-il. Il te regarde en fronçant les sourcils, mais tu perçois un éclair de malice dans ses yeux. Il prétend que tu es une domestique de la Maison de Valbelle et que tu as du retard pour porter un courrier. Tu ne sais pas qui il est, mais il est ton seul espoir.

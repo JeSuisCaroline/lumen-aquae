@@ -1,0 +1,1 @@
+« C'est faux. » Les mots du milicien claquent comme un fouet sur la place de la Rotonde. Le bruit métallique d'une hallebarde que l'on redresse résonne contre les pavés. Le regard qui vous transperce est celui d'une autorité qui perd patience car le moins qu'on puisses dire, c'est que le garde n'est pas convaincu par la réponse.

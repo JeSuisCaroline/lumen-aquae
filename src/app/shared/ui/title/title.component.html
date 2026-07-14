@@ -20,6 +20,6 @@
 }
 
 @if (description) {
-  <p class="description">{{ description }}</p>
+  <p class="description" [innerHTML]="description | markdownEmphasis"></p>
 }
 

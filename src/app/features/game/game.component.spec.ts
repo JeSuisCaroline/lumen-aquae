@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { GameComponent } from './game.component';
 import { GameService } from '../../core/services/game/game.service';
@@ -11,7 +13,7 @@ describe('GameComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [GameComponent],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     gameService = TestBed.inject(GameService);

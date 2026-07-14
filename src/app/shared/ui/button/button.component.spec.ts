@@ -23,14 +23,14 @@ describe('ButtonComponent', () => {
   });
 
   it('should emit click event when clicked', () => {
-    const emitSpy = vi.spyOn(component.click, 'emit');
+    const emitSpy = vi.spyOn(component.clicked, 'emit');
     component.onClick();
     expect(emitSpy).toHaveBeenCalled();
   });
 
   it('should not emit click event when disabled', () => {
     component.disabled = true;
-    const emitSpy = vi.spyOn(component.click, 'emit');
+    const emitSpy = vi.spyOn(component.clicked, 'emit');
     component.onClick();
     expect(emitSpy).not.toHaveBeenCalled();
   });

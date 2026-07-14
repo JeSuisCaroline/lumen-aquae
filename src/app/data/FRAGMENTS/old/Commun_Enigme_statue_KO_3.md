@@ -1,0 +1,1 @@
+Le garde laisse échapper un rire sec, dénué de la moindre trace d'humour. Le sergent fait un pas menaçant, réduisant la distance de sécurité.

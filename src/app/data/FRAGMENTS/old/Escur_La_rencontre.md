@@ -1,0 +1,1 @@
+Tu sautes du toit et atterris avec une aisance feinte. Tu prends ton air le plus furieux et tu commences à réprimander la fille comme si elle travaillait pour toi. Tu sors le nom des "Valbelle", une famille si puissante que même les gardes hésitent à les froisser. Tu sens que le mensonge prend, mais le sergent de la garde n'est pas convaincu. Il va vous tester.

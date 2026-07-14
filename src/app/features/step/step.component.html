@@ -1,18 +1,18 @@
 <div class="step-container">
   <lumen-title
-    [text]="gameService.currentStep?.title || ''"
+    [text]="gameService.currentStep().title"
     level="h2"
-    [description]="gameService.currentStep?.description">
+    [description]="gameService.currentStep().description">
   </lumen-title>
 
   <div class="step-gap" aria-hidden="true"></div>
 
   <div class="choices">
-    @for (choice of gameService.currentStep?.choices || []; track choice.id) {
+    @for (choice of gameService.currentStep().choices; track choice.id) {
       <lumen-button
         [text]="choice.text"
         variant="primary"
-        (click)="gameService.goToStep(choice.nextStepId, choice.gainGold || 0)">
+        (clicked)="gameService.goToStep(choice.nextStepId, choice.gainGold || 0)">
       </lumen-button>
     }
   </div>

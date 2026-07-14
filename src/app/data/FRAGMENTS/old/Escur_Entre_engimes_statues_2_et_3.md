@@ -1,0 +1,1 @@
+Le garde ne te quitte pas des yeux, t'interdisant le moindre geste. Tu vois Luce fixer la troisième statue, celle qui domine le grand **Cours d'Aethelis**. C'est la figure la plus importante, celle qui porte la balance et le glaive.

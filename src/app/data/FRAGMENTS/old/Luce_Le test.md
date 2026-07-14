@@ -1,0 +1,3 @@
+Le garde te dévisage, une main sur sa boucle de ceinture. "Dans ce cas, prouvez-le. Si vous dites vrai, vous devriez très bien connaitre la ville non ? Ces statues, questionne-t-il en désignant les trois statues de marbre ornant le sommet de la fontaine,    guident les voyageurs. Celle qui regarde vers la route de Viana (*Avignon*), que symbolise-t-elle ?"
+
+Tu hésites. Avant que tu n'aies eu le temps d'ouvrir la bouche, ton "sauveur" se précipite pour répondre à ta place.

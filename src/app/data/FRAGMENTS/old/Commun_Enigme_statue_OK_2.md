@@ -1,0 +1,1 @@
+En voyant l'expression du garde, tu en conclues que c'était la bonne réponse. Tu pousses un soupir de soulagement discret. Le mensonge tient toujours.

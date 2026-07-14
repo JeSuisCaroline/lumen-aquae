@@ -1,0 +1,1 @@
+Le garde semble convaincu. Vous ne serez pas jetés au cachot.

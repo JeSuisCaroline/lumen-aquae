@@ -1,52 +1,88 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
-
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { GameService } from './game.service';
 
 describe('GameService', () => {
   let service: GameService;
+  let httpMock: HttpTestingController;
+
+  const canvasUrl = "/data/Canvas%20from%2012%2007%2026/L'histoire.canvas";
+  const fragmentUrl = (name: string) => `/data/FRAGMENTS/${encodeURIComponent(name)}.md`;
+
+  const canvasResponse = {
+    nodes: [
+      { id: 'n1', type: 'text', text: '[[Start]]', x: 0, y: 0, width: 100, height: 60 },
+      { id: 'n2', type: 'text', text: '[[RIDDLE_Test]]', x: 0, y: 100, width: 100, height: 60 },
+      { id: 'n3', type: 'text', text: '[[Test_OK]]', x: 0, y: 200, width: 100, height: 60 },
+      { id: 'n4', type: 'text', text: '[[Test_KO]]', x: 0, y: 300, width: 100, height: 60 },
+    ],
+    edges: [
+      { id: 'e1', fromNode: 'n1', fromSide: 'bottom', toNode: 'n2', toSide: 'top' },
+      { id: 'e2', fromNode: 'n2', fromSide: 'bottom', toNode: 'n3', toSide: 'top' },
+      { id: 'e3', fromNode: 'n2', fromSide: 'bottom', toNode: 'n4', toSide: 'top' },
+    ],
+  };
+
+  const riddleFragment = `
+---
+{
+  "type": "riddle",
+  "question": "Quelle est la bonne réponse ?",
+  "answers": [
+    { "text": "Bonne réponse", "destination": "Test_OK", "increment": 1 },
+    { "text": "Mauvaise réponse", "destination": "Test_KO", "increment": 0 }
+  ]
+}
+---
+Question`;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+
     service = TestBed.inject(GameService);
+    httpMock = TestBed.inject(HttpTestingController);
+
+    httpMock.expectOne(canvasUrl).flush(canvasResponse);
+    httpMock.expectOne(fragmentUrl('Start')).flush('Bienvenue.');
+    httpMock.expectOne(fragmentUrl('RIDDLE_Test')).flush(riddleFragment);
+    httpMock.expectOne(fragmentUrl('Test_OK')).flush('Bonne route.');
+    httpMock.expectOne(fragmentUrl('Test_KO')).flush('Mauvaise route.');
   });
 
-  it('should be created', () => {
+  afterEach(() => {
+    httpMock.verify();
+    TestBed.resetTestingModule();
+  });
+
+  it('should be created and expose the first fragment as the current step', () => {
     expect(service).toBeTruthy();
+    expect(service.isReady()).toBe(true);
+    expect(service.currentStep().id).toBe('Start');
+    expect(service.gold()).toBe(0);
   });
 
-  it('should start a new SOLO game', () => {
-    service.startNewGame();
-    expect(service.mode).toBe('solo');
-    expect(service.getCurrentStep('luce')).toBeTruthy();
-    expect(service.getCurrentStep('escur')).toBeTruthy();
-    expect(service.players.luce.gold).toBe(0);
-    expect(service.players.escur.gold).toBe(0);
+  it('should navigate to a standard fragment', () => {
+    service.goToStep('RIDDLE_Test');
+    expect(service.currentStep().id).toBe('RIDDLE_Test');
   });
 
-  it("should let Luce's choice influence Escur's available choices", () => {
-    service.startNewGame();
+  it('should score a valid riddle answer and route to the _OK fragment', () => {
+    service.goToStep('RIDDLE_Test');
+    service.goToStep('Bonne réponse');
 
-    // Au départ, Escur peut tenter le vol (merchantWarned = false)
-    let escurChoices = service.getAvailableChoices('escur').map((c) => c.id);
-    expect(escurChoices).toContain('E1_C1');
-
-    // Luce prévient le marchand => merchantWarned = true
-    service.pickChoice('luce', 'L1_C1');
-    expect(service.sharedFlags['merchantWarned']).toBe(true);
-
-    // Escur ne doit plus voir le choix E1_C1 (requires !merchantWarned)
-    escurChoices = service.getAvailableChoices('escur').map((c) => c.id);
-    expect(escurChoices).not.toContain('E1_C1');
-    expect(escurChoices).toContain('E1_C1_LOCKED');
+    expect(service.gold()).toBe(1);
+    expect(service.currentStep().id).toBe('Test_OK');
   });
 
-  it('should auto-play Escur in SOLO mode', () => {
-    service.startNewGame();
-    expect(service.mode).toBe('solo');
-    // Escur joue automatiquement, donc il ne reste pas sur E1.
-    expect(service.players.escur.currentStepId).not.toBe('E1');
-    // Il devrait avoir déclenché au moins un flag.
-    expect(Object.keys(service.sharedFlags).length).toBeGreaterThan(0);
+  it('should not score an invalid riddle answer and route to the _KO fragment', () => {
+    service.goToStep('RIDDLE_Test');
+    service.goToStep('Mauvaise réponse');
+
+    expect(service.gold()).toBe(0);
+    expect(service.currentStep().id).toBe('Test_KO');
   });
 });

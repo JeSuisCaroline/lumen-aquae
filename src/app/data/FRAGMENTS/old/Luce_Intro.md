@@ -1,0 +1,5 @@
+Le soleil d'Aix-en-Provence tape fort sur les pavés de la place de la Rotonde. Le fracas de la grande fontaine centrale étouffe presque les bruits de la foule, mais l'air est chargé de cette odeur familière d'eau calcaire et de lavande. Tu t'arrêtes, un peu étourdie par la chaleur. Tu fouilles dans ta sacoche et en sort la lettre froissée de ton oncle Samantis. Tes doigts tremblent légèrement. "Rue Cardinale", avait-il écrit. 
+
+Près de la fontaine de la Rotonde, tu cherches une pièce dans ta bourse pour t'acheter à boire, mais ton anneau de famille glisse et tombe dans le grand bassin. Précipitamment, tu enjambes la pierre pour le récupérer, l'eau mouillant tes bottes. Tu n'as pas vu les deux miliciens s'approcher, le regard noir, déjà prêts à t'accuser de vol ou de dégradation.
+
+Tu restes dans l'eau, l'anneau serré dans ta main.

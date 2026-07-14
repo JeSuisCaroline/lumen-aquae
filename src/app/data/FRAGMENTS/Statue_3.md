@@ -1,0 +1,3 @@
+L'ombre des statues semble s'allonger sur toi. Le sergent croise les bras, un sourire en coin qui ressemble à un défi. 
+
+Tu sens le regard brûlant de ton mystérieux complice dans ton dos. Il est silencieux, mais tu devines son angoisse. Tu lèves les yeux vers la figure de marbre. Elle te semble sévère, imposante, gardienne des lois de cette cité que tu découvres à peine. Tu inspires un grand coup. C'est le moment de vérité.

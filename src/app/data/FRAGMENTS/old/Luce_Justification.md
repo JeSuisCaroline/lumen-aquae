@@ -1,0 +1,3 @@
+"C'est à moi !", t'exclames-tu. Le garde ricane, sa main se posant sur son épée. "C'est ce qu'ils disent tous. Descends de là, on va vérifier si cet anneau ne manque pas à une dame de la ville." Tu es prise au piège d'un soupçon de vol.
+
+Tu sors en hâte du bassin, les pieds glissants. Dans ta panique, tu bouscules violemment le premier garde qui arrivait sur toi. Il titube, ses collègues s'esclaffent, et son visage devient rouge de colère. Il te saisit le bras. Tu as transformé une étourderie en délit.

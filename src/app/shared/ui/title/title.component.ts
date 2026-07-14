@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MarkdownEmphasisPipe } from '../../pipes/markdown-emphasis.pipe';
 
 @Component({
   selector: 'lumen-title',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MarkdownEmphasisPipe],
   templateUrl: './title.component.html',
   styleUrls: ['./title.component.scss']
 })

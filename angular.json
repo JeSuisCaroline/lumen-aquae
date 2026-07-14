@@ -27,6 +27,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/app/data/Canvas from 12 07 26",
+                "output": "/data/Canvas from 12 07 26"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/app/data/FRAGMENTS",
+                "output": "/data/FRAGMENTS"
               }
             ],
             "styles": [
