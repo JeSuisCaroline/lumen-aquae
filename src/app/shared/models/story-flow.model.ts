@@ -15,6 +15,7 @@ export interface CanvasEdge {
   fromSide: string;
   toNode: string;
   toSide: string;
+  label?: string;
 }
 
 export interface CanvasDocument {
@@ -49,10 +50,15 @@ export type StoryFragmentKind = 'standard' | 'riddle' | 'routing';
 
 export type StoryFragmentFrontmatter = RiddleFrontmatter | RoutingFrontmatter | null;
 
+export interface OutgoingChoice {
+  name: string;
+  label?: string;
+}
+
 export interface Fragment {
   name: string;
   kind: StoryFragmentKind;
   frontmatter: StoryFragmentFrontmatter;
   content: string;
-  outgoingFragmentNames: string[];
+  outgoingChoices: OutgoingChoice[];
 }

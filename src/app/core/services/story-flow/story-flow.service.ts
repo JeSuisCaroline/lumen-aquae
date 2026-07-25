@@ -6,6 +6,7 @@ import {
   type RiddleFrontmatter,
   type RoutingFrontmatter,
   type Fragment,
+  type OutgoingChoice,
 } from '../../../shared/models/story-flow.model';
 import { extractFragmentName, parseCanvas, parseFragmentMarkdown, toAssetUrl } from './story-flow.parser';
 
@@ -108,7 +109,7 @@ export class StoryFlowService {
     fragmentNamesByNodeId: Map<string, string>,
     loadedFragments: LoadedFragment[],
   ): void {
-    const outgoingByNodeId = new Map<string, string[]>();
+    const outgoingByNodeId = new Map<string, OutgoingChoice[]>();
     const incomingCountByNodeId = new Map<string, number>();
 
     for (const edge of canvas.edges) {
@@ -118,14 +119,14 @@ export class StoryFlowService {
       }
 
       const outgoing = outgoingByNodeId.get(edge.fromNode) ?? [];
-      outgoing.push(toName);
+      outgoing.push({ name: toName, label: edge.label });
       outgoingByNodeId.set(edge.fromNode, outgoing);
 
       incomingCountByNodeId.set(edge.toNode, (incomingCountByNodeId.get(edge.toNode) ?? 0) + 1);
     }
 
     this.fragmentsByName = new Map(
-      loadedFragments.map((loaded) => [loaded.name, { ...loaded, outgoingFragmentNames: [] }]),
+      loadedFragments.map((loaded) => [loaded.name, { ...loaded, outgoingChoices: [] }]),
     );
 
     let startFragmentName: string | null = null;
@@ -135,7 +136,7 @@ export class StoryFlowService {
         continue;
       }
 
-      fragment.outgoingFragmentNames = outgoingByNodeId.get(nodeId) ?? [];
+      fragment.outgoingChoices = outgoingByNodeId.get(nodeId) ?? [];
 
       if (!startFragmentName && !incomingCountByNodeId.has(nodeId)) {
         startFragmentName = name;

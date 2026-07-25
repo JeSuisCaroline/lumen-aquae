@@ -26,7 +26,7 @@
 		{"id":"54c1cb1dbdc9237d","fromNode":"5588359d37b338b2","fromSide":"bottom","toNode":"5819357970e78b7a","toSide":"top"},
 		{"id":"39118b51fbe46274","fromNode":"5f765c0d69fa7631","fromSide":"bottom","toNode":"5819357970e78b7a","toSide":"top"},
 		{"id":"9e1301dc8c94cd0c","fromNode":"282658ea81439960","fromSide":"bottom","toNode":"e4b96e86f2317133","toSide":"top"},
-		{"id":"050a99c10a976ae5","fromNode":"e4b96e86f2317133","fromSide":"bottom","toNode":"6b9708b1cc41b3b5","toSide":"top"},
+		{"id":"050a99c10a976ae5","fromNode":"e4b96e86f2317133","fromSide":"bottom","toNode":"6b9708b1cc41b3b5","toSide":"top","label":"Le défi du capitaine"},
 		{"id":"bc360ac7628fa644","fromNode":"6b9708b1cc41b3b5","fromSide":"bottom","toNode":"284dcea35fdb8eca","toSide":"top"},
 		{"id":"dd231a7a1cd82e87","fromNode":"284dcea35fdb8eca","fromSide":"bottom","toNode":"46ba73fdf0393743","toSide":"top"},
 		{"id":"222c9addfcdf4c71","fromNode":"284dcea35fdb8eca","fromSide":"bottom","toNode":"67a63e63e9ca2d39","toSide":"top"},

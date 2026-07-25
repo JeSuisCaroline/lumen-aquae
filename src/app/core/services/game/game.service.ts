@@ -23,7 +23,6 @@ export class GameService {
 
   public goToStep(stepId: string, _goldBonus = 0): void {
     const fragment = this.storyFlow.currentFragment();
-    console.log('%cfragment', 'color: #4CAF50; font-weight: bold;', fragment);
     if (!fragment) {
       return;
     }
@@ -68,10 +67,10 @@ export class GameService {
       return [];
     }
 
-    return fragment.outgoingFragmentNames.map((name) => ({
-      id: name,
-      text: name,
-      nextStepId: name,
+    return fragment.outgoingChoices.map((choice) => ({
+      id: choice.name,
+      text: choice.label ?? 'Continuer',
+      nextStepId: choice.name,
     }));
   }
 }
