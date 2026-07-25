@@ -1,0 +1,77 @@
+.dev-fragment-search {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  z-index: 1000;
+  width: 260px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dev-fragment-search__badge {
+  align-self: flex-start;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  background: #ff9800;
+  color: #1a1200;
+  font-weight: bold;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+}
+
+.dev-fragment-search__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.6rem;
+  border: 1px dashed #ff9800;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffcc80;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+
+  &::placeholder {
+    color: rgba(255, 204, 128, 0.5);
+  }
+
+  &:focus {
+    border-style: solid;
+  }
+}
+
+.dev-fragment-search__suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #ff9800;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.92);
+
+  li + li {
+    border-top: 1px solid rgba(255, 152, 0, 0.3);
+  }
+
+  button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem 0.6rem;
+    background: none;
+    border: none;
+    color: #ffcc80;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+
+    &:hover {
+      background: rgba(255, 152, 0, 0.2);
+    }
+  }
+}

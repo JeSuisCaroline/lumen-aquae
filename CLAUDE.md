@@ -129,6 +129,35 @@ Le corps (`content`) d'un fragment passe par le pipe `MarkdownEmphasisPipe` (`sr
 
 Le **titre** du fragment (`text` du composant `lumen-title`) ne passe pas par ce pipe et n'interprète donc aucune emphase.
 
+---
+
+## 🧪 MODE DEV vs PROD (outils de debug)
+
+Certains éléments de l'UI sont conditionnés par `isDevMode()` (natif Angular, importé de `@angular/core`) : ils n'existent **que** quand l'app tourne en configuration `development`, jamais en `production`.
+
+### Comment `isDevMode()` est déterminé
+`isDevMode()` reflète le flag `ngDevMode`, lui-même fixé par le flag `optimization` du build (`angular.json`) :
+- Configuration **`development`** (`angular.json` → `architect.build.configurations.development`) : `optimization: false` → `isDevMode() === true`.
+- Configuration **`production`** (`architect.build.configurations.production`, c'est le `defaultConfiguration` du build) : `optimization` reste à sa valeur par défaut (`true`) → `isDevMode() === false`.
+
+### Ce que ça change concrètement
+| | Dev mode | Prod (ou preview) |
+|---|---|---|
+| Barre de recherche de fragments (`lumen-dev-fragment-search`, coin bas-droit) | Visible | Absente (le `@if (isDevMode)` ne rend rien) |
+| Titre affiché sur une step (`GameService.mapFragmentToStep`) | Nom technique du fragment (ex: `Fin_Prologue`) | Chaîne vide `''` |
+
+⚠️ Avant d'ajouter un nouvel outil de debug/QA à l'UI, réutiliser ce même pattern (`isDevMode()`) plutôt que d'inventer un autre mécanisme de gating.
+
+### Correspondance avec les scripts `package.json`
+| Script | Commande réelle | Configuration Angular | `isDevMode()` |
+|---|---|---|---|
+| `npm start` | `ng serve` | `development` (défaut du `serve`) | `true` |
+| `npm run watch` | `ng build --watch --configuration development` | `development` (explicite) | `true` |
+| `npm run build` | `ng build` | `production` (défaut du `build`) | `false` |
+| `npm run preview` | `ng build && npx http-server dist/lumen-aquae/browser -p 8080` | `production` (build) + serveur statique local sur `:8080` | `false` |
+
+`npm run preview` est le moyen le plus rapide de vérifier en local qu'un comportement dev-only (barre de recherche, titre technique...) disparaît bien avant de pousser en prod — pas besoin de déployer pour tester.
+
 ## 🎨 CONVENTIONS DE CODE
 
 ### Composants
@@ -196,5 +225,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v1.4 | Maj: 2026-07-25**
+**CLAUDE.md v1.5 | Maj: 2026-07-25**
 

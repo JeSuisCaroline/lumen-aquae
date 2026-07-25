@@ -32,10 +32,12 @@ export class StoryFlowService {
   private readonly scoreSignal = signal(0);
   private readonly currentFragmentSignal = signal<Fragment | null>(null);
   private readonly canvasLoadedSignal = signal(false);
+  private readonly fragmentNamesSignal = signal<string[]>([]);
 
   readonly score = this.scoreSignal.asReadonly();
   readonly currentFragment = this.currentFragmentSignal.asReadonly();
   readonly canvasLoaded = this.canvasLoadedSignal.asReadonly();
+  readonly fragmentNames = this.fragmentNamesSignal.asReadonly();
 
   public loadAndInitializeCanvasGraph(): Observable<void> {
     return this.http.get(this.canvasUrl, { responseType: 'text' }).pipe(
@@ -128,6 +130,7 @@ export class StoryFlowService {
     this.fragmentsByName = new Map(
       loadedFragments.map((loaded) => [loaded.name, { ...loaded, outgoingChoices: [] }]),
     );
+    this.fragmentNamesSignal.set([...this.fragmentsByName.keys()]);
 
     let startFragmentName: string | null = null;
     for (const [nodeId, name] of fragmentNamesByNodeId.entries()) {

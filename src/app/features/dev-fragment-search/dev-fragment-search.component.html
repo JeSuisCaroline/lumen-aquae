@@ -1,0 +1,25 @@
+@if (isDevMode) {
+  <div class="dev-fragment-search">
+    <span class="dev-fragment-search__badge">DEV</span>
+    <input
+      type="text"
+      class="dev-fragment-search__input"
+      placeholder="Aller à un fragment..."
+      [value]="query()"
+      (input)="onInput($any($event.target).value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    @if (isOpen() && suggestions().length > 0) {
+      <ul class="dev-fragment-search__suggestions">
+        @for (name of suggestions(); track name) {
+          <li>
+            <button type="button" (mousedown)="selectFragment(name)">{{ name }}</button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+}

@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, computed, inject, isDevMode } from '@angular/core';
 import { type Choice, type Step } from '../../../shared/models/game-step.model';
 import { type RiddleFrontmatter, type Fragment } from '../../../shared/models/story-flow.model';
 import { StoryFlowService } from '../story-flow/story-flow.service';
@@ -11,6 +11,7 @@ export class GameService {
 
   readonly isReady = this.storyFlow.canvasLoaded;
   readonly gold = this.storyFlow.score;
+  readonly fragmentNames = this.storyFlow.fragmentNames;
   readonly currentStep = computed<Step>(() => this.mapFragmentToStep(this.storyFlow.currentFragment()));
 
   constructor() {
@@ -19,6 +20,10 @@ export class GameService {
 
   public restart(): void {
     this.storyFlow.restartStory();
+  }
+
+  public jumpToFragment(name: string): void {
+    this.storyFlow.goToFragment(name);
   }
 
   public goToStep(stepId: string, _goldBonus = 0): void {
@@ -47,7 +52,7 @@ export class GameService {
 
     return {
       id: fragment.name,
-      title: '',
+      title: isDevMode() ? fragment.name : '',
       description: fragment.content,
       choices: this.mapFragmentChoices(fragment),
     };
