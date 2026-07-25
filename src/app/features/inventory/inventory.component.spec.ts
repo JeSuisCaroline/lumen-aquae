@@ -28,9 +28,4 @@ describe('PlayerComponent', () => {
   it('should have gameService injected', () => {
     expect(component.gameService).toBeTruthy();
   });
-
-  it('should display gold amount', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Florins');
-  });
 });

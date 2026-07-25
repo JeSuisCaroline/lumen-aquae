@@ -9,6 +9,7 @@ import {
   type OutgoingChoice,
 } from '../../../shared/models/story-flow.model';
 import { extractFragmentName, parseCanvas, parseFragmentMarkdown, toAssetUrl } from './story-flow.parser';
+import { PlayerStateService } from '../player-state/player-state.service';
 
 interface LoadedFragment {
   name: string;
@@ -22,6 +23,7 @@ interface LoadedFragment {
 })
 export class StoryFlowService {
   private readonly http = inject(HttpClient);
+  private readonly playerState = inject(PlayerStateService);
 
   private readonly canvasUrl = toAssetUrl('data', 'Canvas from 12 07 26', "L'histoire.canvas");
   private readonly fragmentsFolder = ['data', 'FRAGMENTS'];
@@ -29,12 +31,10 @@ export class StoryFlowService {
   private fragmentsByName = new Map<string, Fragment>();
   private startFragmentName: string | null = null;
 
-  private readonly scoreSignal = signal(0);
   private readonly currentFragmentSignal = signal<Fragment | null>(null);
   private readonly canvasLoadedSignal = signal(false);
   private readonly fragmentNamesSignal = signal<string[]>([]);
 
-  readonly score = this.scoreSignal.asReadonly();
   readonly currentFragment = this.currentFragmentSignal.asReadonly();
   readonly canvasLoaded = this.canvasLoadedSignal.asReadonly();
   readonly fragmentNames = this.fragmentNamesSignal.asReadonly();
@@ -53,6 +53,8 @@ export class StoryFlowService {
       throw new Error(`Fragment introuvable : ${fragmentName}`);
     }
 
+    this.playerState.applyEffects(fragment.frontmatter);
+
     if (fragment.kind === 'routing') {
       this.routeFromRoutingFragment(fragment);
       return;
@@ -65,7 +67,7 @@ export class StoryFlowService {
     if (!this.startFragmentName) {
       throw new Error("Aucun fragment de départ n'a été identifié dans le canvas.");
     }
-    this.scoreSignal.set(0);
+    this.playerState.reset();
     this.goToFragment(this.startFragmentName);
   }
 
@@ -81,7 +83,7 @@ export class StoryFlowService {
       throw new Error(`Réponse inconnue pour ${fragment.name} : ${answerText}`);
     }
 
-    this.scoreSignal.update((score) => score + (answer.increment ?? 0));
+    this.playerState.incrementScore(answer.increment ?? 0);
     this.goToFragment(answer.destination);
   }
 
@@ -97,7 +99,7 @@ export class StoryFlowService {
     const uniqueNames = [...new Set(fragmentNamesByNodeId.values())];
     const requests = uniqueNames.map((name) =>
       this.http.get(this.fragmentUrl(name), { responseType: 'text' }).pipe(
-        map((raw): LoadedFragment => ({ name, ...parseFragmentMarkdown(raw) })),
+        map((raw): LoadedFragment => ({ name, ...parseFragmentMarkdown(raw, name) })),
       ),
     );
 
@@ -168,7 +170,7 @@ export class StoryFlowService {
 
   private readTrackedVariable(variableName: string): number | string {
     if (variableName === 'score') {
-      return this.scoreSignal();
+      return this.playerState.score();
     }
 
     return '';
@@ -176,7 +178,7 @@ export class StoryFlowService {
 
   private resetTrackedVariable(variableName: string): void {
     if ('score' === variableName) {
-      this.scoreSignal.set(0);
+      this.playerState.resetScore();
     }
   }
 

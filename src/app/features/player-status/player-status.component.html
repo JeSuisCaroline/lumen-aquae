@@ -1,0 +1,12 @@
+<div class="player-status">
+  <div class="player-status__stat">
+    <lumen-icon name="coin" size="1.1rem"></lumen-icon>
+    <span class="player-status__value">{{ florins() }}</span>
+    <span class="player-status__label">Florins</span>
+  </div>
+  <div class="player-status__stat" [class.player-status__stat--low]="isLowHophophops()">
+    <lumen-icon name="bolt" size="1.1rem"></lumen-icon>
+    <span class="player-status__value">{{ hophophops() }}</span>
+    <span class="player-status__label">Hophophops</span>
+  </div>
+</div>

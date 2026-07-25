@@ -14,5 +14,9 @@ export const routes: Routes = [
 	path: 'game',
 	loadComponent: () => import('../../features/game/game.component').then((m) => m.GameComponent),
   },
+  {
+	path: 'game-over',
+	loadComponent: () => import('../../features/game-over/game-over.component').then((m) => m.GameOverComponent),
+  },
   { path: '**', redirectTo: 'welcome' },
 ];

@@ -1,21 +1,32 @@
-import { Injectable, computed, inject, isDevMode } from '@angular/core';
+import { Injectable, computed, effect, inject, isDevMode } from '@angular/core';
+import { Router } from '@angular/router';
 import { type Choice, type Step } from '../../../shared/models/game-step.model';
 import { type RiddleFrontmatter, type Fragment } from '../../../shared/models/story-flow.model';
 import { StoryFlowService } from '../story-flow/story-flow.service';
+import { PlayerStateService } from '../player-state/player-state.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
   private readonly storyFlow = inject(StoryFlowService);
+  private readonly playerState = inject(PlayerStateService);
+  private readonly router = inject(Router);
 
   readonly isReady = this.storyFlow.canvasLoaded;
-  readonly gold = this.storyFlow.score;
+  readonly florins = this.playerState.florins;
+  readonly hophophops = this.playerState.hophophops;
   readonly fragmentNames = this.storyFlow.fragmentNames;
   readonly currentStep = computed<Step>(() => this.mapFragmentToStep(this.storyFlow.currentFragment()));
 
   constructor() {
     this.storyFlow.loadAndInitializeCanvasGraph().subscribe();
+
+    effect(() => {
+      if (this.playerState.hophophops() <= 0) {
+        this.router.navigateByUrl('/game-over');
+      }
+    });
   }
 
   public restart(): void {
@@ -26,7 +37,7 @@ export class GameService {
     this.storyFlow.goToFragment(name);
   }
 
-  public goToStep(stepId: string, _goldBonus = 0): void {
+  public goToStep(stepId: string): void {
     const fragment = this.storyFlow.currentFragment();
     if (!fragment) {
       return;

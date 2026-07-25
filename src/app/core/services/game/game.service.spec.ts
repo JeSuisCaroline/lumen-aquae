@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { GameService } from './game.service';
 
@@ -40,7 +41,7 @@ Question`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
 
     service = TestBed.inject(GameService);
@@ -62,7 +63,8 @@ Question`;
     expect(service).toBeTruthy();
     expect(service.isReady()).toBe(true);
     expect(service.currentStep().id).toBe('Start');
-    expect(service.gold()).toBe(0);
+    expect(service.florins()).toBe(10);
+    expect(service.hophophops()).toBe(10);
   });
 
   it('should navigate to a standard fragment', () => {
@@ -70,19 +72,19 @@ Question`;
     expect(service.currentStep().id).toBe('RIDDLE_Test');
   });
 
-  it('should score a valid riddle answer and route to the _OK fragment', () => {
+  it('should route to the _OK fragment on a valid riddle answer, without affecting florins/hophophops', () => {
     service.goToStep('RIDDLE_Test');
     service.goToStep('Bonne réponse');
 
-    expect(service.gold()).toBe(1);
     expect(service.currentStep().id).toBe('Test_OK');
+    expect(service.florins()).toBe(10);
+    expect(service.hophophops()).toBe(10);
   });
 
-  it('should not score an invalid riddle answer and route to the _KO fragment', () => {
+  it('should route to the _KO fragment on an invalid riddle answer', () => {
     service.goToStep('RIDDLE_Test');
     service.goToStep('Mauvaise réponse');
 
-    expect(service.gold()).toBe(0);
     expect(service.currentStep().id).toBe('Test_KO');
   });
 });

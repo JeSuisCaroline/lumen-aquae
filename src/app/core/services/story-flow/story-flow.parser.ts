@@ -2,6 +2,7 @@ import {
   type CanvasDocument,
   type RiddleFrontmatter,
   type RoutingFrontmatter,
+  type StandardFrontmatter,
   type StoryFragmentFrontmatter,
   type StoryFragmentKind,
 } from '../../../shared/models/story-flow.model';
@@ -26,7 +27,7 @@ export function extractFragmentName(nodeText: string): string | null {
   return match ? match[1].trim() : null;
 }
 
-export function parseFragmentMarkdown(rawMarkdown: string): ParsedFragmentMarkdown {
+export function parseFragmentMarkdown(rawMarkdown: string, fragmentName?: string): ParsedFragmentMarkdown {
   const { frontmatterText, body } = splitFrontmatter(rawMarkdown);
   const content = body.trim();
 
@@ -34,7 +35,16 @@ export function parseFragmentMarkdown(rawMarkdown: string): ParsedFragmentMarkdo
     return { kind: 'standard', frontmatter: null, content };
   }
 
-  const parsed: unknown = JSON.parse(frontmatterText);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(frontmatterText);
+  } catch (error) {
+    console.error(
+      `Frontmatter JSON invalide dans le fragment "${fragmentName ?? '?'}" — il sera traité comme un fragment standard sans effet. Détail : ${(error as Error).message}`,
+    );
+    return { kind: 'standard', frontmatter: null, content };
+  }
+
   if (!isRecord(parsed)) {
     return { kind: 'standard', frontmatter: null, content };
   }
@@ -47,7 +57,7 @@ export function parseFragmentMarkdown(rawMarkdown: string): ParsedFragmentMarkdo
     return { kind: 'routing', frontmatter: parsed as unknown as RoutingFrontmatter, content };
   }
 
-  return { kind: 'standard', frontmatter: null, content };
+  return { kind: 'standard', frontmatter: parsed as unknown as StandardFrontmatter, content };
 }
 
 export function toAssetUrl(...segments: string[]): string {

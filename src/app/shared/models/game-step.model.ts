@@ -10,5 +10,4 @@ export interface Choice {
   id: string;
   text: string;
   nextStepId: string;
-  gainGold?: number; // Préparation pour vos futurs Florins !
 }

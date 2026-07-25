@@ -12,7 +12,7 @@
       <lumen-button
         [id]="'path-button-' + choice.id"
         [text]="choice.text"
-        (clicked)="gameService.goToStep(choice.nextStepId, choice.gainGold || 0)">
+        (clicked)="gameService.goToStep(choice.nextStepId)">
       </lumen-button>
     }
   </div>

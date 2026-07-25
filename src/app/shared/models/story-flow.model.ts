@@ -23,13 +23,18 @@ export interface CanvasDocument {
   edges: CanvasEdge[];
 }
 
+export interface ResourceEffects {
+  FLO?: number;
+  HOP?: number;
+}
+
 export interface RiddleAnswer {
   text: string;
   destination: string;
   increment?: number;
 }
 
-export interface RiddleFrontmatter {
+export interface RiddleFrontmatter extends ResourceEffects {
   type: 'riddle';
   question: string;
   answers: RiddleAnswer[];
@@ -40,15 +45,19 @@ export interface RoutingBranch {
   destination: string;
 }
 
-export interface RoutingFrontmatter {
+export interface RoutingFrontmatter extends ResourceEffects {
   type: 'routing';
   variable_to_test: string;
   branches: RoutingBranch[];
 }
 
+export interface StandardFrontmatter extends ResourceEffects {
+  type?: 'standard';
+}
+
 export type StoryFragmentKind = 'standard' | 'riddle' | 'routing';
 
-export type StoryFragmentFrontmatter = RiddleFrontmatter | RoutingFrontmatter | null;
+export type StoryFragmentFrontmatter = StandardFrontmatter | RiddleFrontmatter | RoutingFrontmatter | null;
 
 export interface OutgoingChoice {
   name: string;
