@@ -11,7 +11,8 @@ export class MarkdownEmphasisPipe implements PipeTransform {
   transform(value: string | null | undefined): SafeHtml {
     const html = (value ?? '')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>');
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/_(.+?)_/g, '<em>$1</em>');
 
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }

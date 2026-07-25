@@ -47,7 +47,7 @@ export class GameService {
 
     return {
       id: fragment.name,
-      title: fragment.name,
+      title: '',
       description: fragment.content,
       choices: this.mapFragmentChoices(fragment),
     };
