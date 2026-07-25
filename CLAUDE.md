@@ -1,6 +1,6 @@
 # 🎮 LUMEN-AQUAE - CONTEXTE POUR ASSISTANTS IA
 
-**À initialiser une fois par session de travail**
+**Chargé automatiquement par Claude Code en début de session.**
 
 ---
 
@@ -134,11 +134,16 @@ Chaque réponse porte directement sa **destination** (nom du fragment vers leque
 
 ### 🔲 À Développer
 - **Énigmes** : Saisie réponses + validation
-- **Geolocalisation** : Intégration GPS + validation rayon
 - **Inventaire UI** : Affichage items + Florins
-- **Système classes** : Aptitudes différentes par joueur
 - **Conséquences dynamiques** : Crédibilité impact story
 - **Persistance** : localStorage pour sauvegarde partie
+
+### 🔮 Reporté à plus tard
+⚠️ Le scope actuel est volontairement réduit : le joueur incarne uniquement **Luce**. Ne pas implémenter ou anticiper les points suivants sans demande explicite :
+- **Système à deux joueurs** : Escur (voleur) n'est pas encore jouable
+- **Geolocalisation** : Intégration GPS + validation rayon
+- **Aptitudes par classe** : Différenciation Luce/Escur
+- **Pouvoirs magiques** : Sorts/capacités de Luce (magicienne)
 
 ---
 
@@ -163,10 +168,17 @@ Chaque réponse porte directement sa **destination** (nom du fragment vers leque
 
 ## 📞 RÉINITIALISER LE CONTEXTE
 
-Si je perds le contexte :
+Si je perds le contexte (session très longue, résumé automatique...) :
 ```
-Je dois relire mon PROMPT.md, réapplis-le svp au complet.
+Je dois relire mon CLAUDE.md, réapplis-le svp au complet.
 ```
 
-**PROMPT v1.1 | Maj: 2026-07-14**
+## ✏️ MISE À JOUR DU CLAUDE.md
+
+Si le contexte du projet évolue (nouvelle règle, changement d'architecture, décision structurante, etc.), ce fichier doit être tenu à jour.
+
+- ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
+- ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
+
+**CLAUDE.md v1.3 | Maj: 2026-07-25**
 

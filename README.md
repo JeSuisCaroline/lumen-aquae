@@ -95,14 +95,7 @@ ng generate component features/nom  # Genérer un composant
 @
 ---
 ## 🤖 Pour les Assistants IA
-⚠️ **IMPORTANT** : Avant de répondre à toute question sur ce projet, consultez le fichier \PROMPT.md\ à la racine.
-### Comment initialiser le contexte
-**Au démarrage de chaque session de travail sur Lumen-Aquae** :
-\\\
-Je travaille sur Lumen-Aquae.
-Initialise le contexte avec PROMPT.md : [copier le contenu complet de PROMPT.md ici]
-\\\
-Puis pour toutes les questions suivantes dans cette session, le contexte reste actif.
+⚠️ **IMPORTANT** : Le fichier `CLAUDE.md` à la racine contient le contexte du projet et est chargé automatiquement par Claude Code en début de session (aucun copier-coller manuel nécessaire).
 ### Informations clés à retenir
 - 🎮 **POC** : Jeu 2 joueurs (Luce & Escur)
 - 🏛️ **Lieu** : Aix-en-Provence
