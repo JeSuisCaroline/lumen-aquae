@@ -21,7 +21,7 @@
 
   .step-title {
     font-size: 1.5rem;
-    color: #4480d0;
+    color: var(--lumen-blue);
     margin-bottom: 10px;
   }
 
@@ -36,6 +36,7 @@
   .choices {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
 

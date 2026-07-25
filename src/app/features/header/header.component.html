@@ -1,0 +1,15 @@
+<header class="game-header">
+  <div class="header-left">
+    <lumen-title [text]="title" level="h2"></lumen-title>
+  </div>
+  <div class="header-right">
+    <lumen-button
+      id="restart-button"
+      text="Retour au début"
+      title="Revenir au début de l'histoire"
+      icon="rewind"
+      [compact]="true"
+      (clicked)="onRestart()">
+    </lumen-button>
+  </div>
+</header>

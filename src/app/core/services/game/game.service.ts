@@ -17,6 +17,10 @@ export class GameService {
     this.storyFlow.loadAndInitializeCanvasGraph().subscribe();
   }
 
+  public restart(): void {
+    this.storyFlow.restartStory();
+  }
+
   public goToStep(stepId: string, _goldBonus = 0): void {
     const fragment = this.storyFlow.currentFragment();
     console.log('%cfragment', 'color: #4CAF50; font-weight: bold;', fragment);

@@ -36,7 +36,7 @@ Si une commande diffère réellement selon l'OS, donne d'abord la version Bash, 
 ### Règle pour les tests (IMPORTANT)
 
 Quand tu agis en tant qu'agent Copilot sur ce projet :
-
+  
 - ❌ **Ne crée pas de nouveaux fichiers de tests** (`*.spec.ts`) automatiquement.
 - ❌ **Ne lance pas** de commandes de test / couverture (`npm test`, `vitest`, `ng test`, etc.) automatiquement.
 - ✅ **Fais-le uniquement si je te le demande explicitement** (ex: "lance les tests" / "corrige les tests").
@@ -109,7 +109,7 @@ Chaque réponse porte directement sa **destination** (nom du fragment vers leque
 - Pas de fichier de test pour ce service pour l'instant (demandé explicitement).
 - `angular.json` expose désormais `src/app/data/Canvas from 12 07 26` et `src/app/data/FRAGMENTS` comme assets statiques (`/data/...`), sans quoi `HttpClient` recevrait des 404.
 
-⚠️ **`GameService` (`core/services/game/game.service.ts`) n'est PAS branché sur `StoryFlowService`** : il utilise encore l'ancien prototype statique à 2 joueurs (`SCENARIO`, `players.luce`/`players.escur`, `sharedFlags`). Le raccordement est une étape future distincte, pas encore demandée.
+✅ **`GameService` (`core/services/game/game.service.ts`) est branché sur `StoryFlowService`** : il expose `isReady`/`gold`/`currentStep` dérivés des signals de `StoryFlowService`, et délègue la navigation (`goToStep`, `restart`) à `goToFragment`/`submitRiddleAnswer`/`restartStory`. L'ancien prototype statique (`SCENARIO`, `players.luce`/`players.escur`, `sharedFlags`) n'est plus utilisé.
 
 ⚠️ Ne jamais inventer une "bonne réponse" (`valid: true`) dans un fragment `RIDDLE_` sans confirmation explicite de l'utilisateur.
 

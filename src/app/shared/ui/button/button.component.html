@@ -1,8 +1,13 @@
 <button
+  [id]="id || null"
+  [title]="title || null"
+  [attr.aria-label]="title || text"
   [class.disabled]="disabled"
-  [ngClass]="'variant-' + variant"
+  [class.compact]="compact"
   (click)="onClick()"
   [disabled]="disabled">
-  {{ text }}
+  <span class="rune">
+    <lumen-icon [name]="icon" size="0.95rem"></lumen-icon>
+  </span>
+  <span class="label">{{ text }}</span>
 </button>
-

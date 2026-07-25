@@ -26,6 +26,7 @@ export class StoryFlowService {
   private readonly fragmentsFolder = ['data', 'FRAGMENTS'];
 
   private fragmentsByName = new Map<string, Fragment>();
+  private startFragmentName: string | null = null;
 
   private readonly scoreSignal = signal(0);
   private readonly currentFragmentSignal = signal<Fragment | null>(null);
@@ -55,6 +56,14 @@ export class StoryFlowService {
     }
 
     this.currentFragmentSignal.set(fragment);
+  }
+
+  public restartStory(): void {
+    if (!this.startFragmentName) {
+      throw new Error("Aucun fragment de départ n'a été identifié dans le canvas.");
+    }
+    this.scoreSignal.set(0);
+    this.goToFragment(this.startFragmentName);
   }
 
   public submitRiddleAnswer(answerText: string): void {
@@ -133,6 +142,7 @@ export class StoryFlowService {
       }
     }
 
+    this.startFragmentName = startFragmentName;
     if (startFragmentName) {
       this.goToFragment(startFragmentName);
     }
