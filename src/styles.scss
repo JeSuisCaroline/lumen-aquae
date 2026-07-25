@@ -4,3 +4,8 @@
 :root {
   --lumen-blue: #{colors.$lumen-blue};
 }
+
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 0.95rem;
+}
