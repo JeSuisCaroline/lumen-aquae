@@ -11,6 +11,7 @@
 **Framework** : Angular 21.1.0 standalone  
 **Lieu** : Aix-en-Provence  
 **Loc du code** : `C:\Users\fabri\WebstormProjects\lumen-aquae`
+**Hébergement** : Vercel — ⚠️ **contrainte produit importante** : l'app doit pouvoir être lancée simplement par un **lien** ou un **QR code** (les joueurs y accèdent depuis leur téléphone, dans la rue). Le lien/QR code renvoie vers **la racine (`/`), qui redirige vers `/welcome`** — jamais directement vers `/game`. Toute évolution (routing, assets, PWA) doit rester compatible avec un accès direct à cette URL racine.
 
 ---
 
@@ -201,6 +202,36 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 | `/game-over` | `GameOverComponent` | Affiché automatiquement quand `hophophops` atteint 0 |
 | `**` | — | Redirige vers `/welcome` |
 
+## 🚀 DÉPLOIEMENT VERCEL
+
+Aucune config Vercel n'est encore présente dans le repo (pas de `vercel.json`, pas de dossier `.vercel/`) — à créer/configurer lors du premier déploiement.
+
+### Procédure (première fois, via le dashboard Vercel)
+1. Pousser le repo sur GitHub/GitLab/Bitbucket (Vercel se connecte à un repo Git, pas à un dossier local).
+2. Sur [vercel.com](https://vercel.com) → **Add New** → **Project** → importer le repo `lumen-aquae`.
+3. Vercel détecte Angular automatiquement (**Framework Preset: Angular**). Vérifier/ajuster si besoin :
+   - **Build Command** : `npm run build` (= `ng build`, config `production` par défaut)
+   - **Output Directory** : `dist/lumen-aquae/browser` (⚠️ à cause de `outputMode: "static"` dans `angular.json`, il n'y a **pas** de bundle serveur à déployer — seul le contenu statique de `browser/` compte)
+   - **Install Command** : `npm install` (défaut)
+4. Déployer → Vercel fournit une URL de production stable (`https://lumen-aquae.vercel.app` ou domaine personnalisé).
+
+### Alternative en CLI
+```bash
+npm i -g vercel
+vercel login
+vercel --prod
+```
+Vercel détecte aussi automatiquement le projet Angular dans ce cas.
+
+### Point d'attention : routing côté client
+L'app utilise le routing Angular (`/welcome`, `/tuto`, `/game`, `/game-over`) — un accès direct ou un rechargement sur une de ces URLs doit renvoyer `index.html` (sinon 404 côté serveur). Le preset Angular de Vercel gère normalement ça nativement ; si ce n'est pas le cas, ajouter un `vercel.json` à la racine :
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+**Toujours vérifier ce point après un déploiement** : ouvrir directement l'URL racine (`/`, celle utilisée par le lien/QR code partagé aux joueurs) plutôt que de naviguer depuis une autre page, et confirmer qu'elle charge bien `/welcome` plutôt qu'une 404. Le lien/QR code ne doit **jamais** pointer vers `/game` ou une autre route interne — toujours vers la racine.
+
 ## 🎨 DESIGN GÉNÉRAL DE L'APP
 
 Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les couleurs viennent d'une source unique, `src/app/shared/styles/_colors.scss` :
@@ -288,5 +319,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v2.3 | Maj: 2026-07-26**
+**CLAUDE.md v2.5 | Maj: 2026-07-26**
 
