@@ -10,11 +10,11 @@ const INITIAL_SCORE = 0;
 })
 export class PlayerStateService {
   private readonly florinsSignal = signal(INITIAL_FLORINS);
-  private readonly hophophopsSignal = signal(INITIAL_HOPHOPHOPS);
+  private readonly hopopopsSignal = signal(INITIAL_HOPHOPHOPS);
   private readonly scoreSignal = signal(INITIAL_SCORE);
 
   readonly florins = this.florinsSignal.asReadonly();
-  readonly hophophops = this.hophophopsSignal.asReadonly();
+  readonly hopopops = this.hopopopsSignal.asReadonly();
   readonly score = this.scoreSignal.asReadonly();
 
   public applyEffects(effects: ResourceEffects | null | undefined): void {
@@ -27,7 +27,7 @@ export class PlayerStateService {
     }
 
     if (effects.HOP) {
-      this.hophophopsSignal.update((value) => Math.max(0, value + effects.HOP!));
+      this.hopopopsSignal.update((value) => Math.max(0, value + effects.HOP!));
     }
   }
 
@@ -41,7 +41,7 @@ export class PlayerStateService {
 
   public reset(): void {
     this.florinsSignal.set(INITIAL_FLORINS);
-    this.hophophopsSignal.set(INITIAL_HOPHOPHOPS);
+    this.hopopopsSignal.set(INITIAL_HOPHOPHOPS);
     this.resetScore();
   }
 }

@@ -48,9 +48,9 @@ export class TutoComponent {
     {
       icon: 'bolt',
       color: 'danger',
-      title: 'Les Hophophops',
+      title: 'Les Hopopops',
       description:
-        "Alors là, on parle sérieux. Les Hophophops, c'est ta motivation, ton énergie, ta niaque à continuer de crapahuter dans les rues d'Aix plutôt que de rentrer te coucher — une sorte de points de vie, mais version _j'ai plus la force_. Tu démarres avec 10. S'ils tombent à 0... Luce s'effondre. Littéralement. Tout de suite. Game over. Ménage-les comme tu ménagerais ton dernier calisson du matin.",
+        "Alors là, on parle sérieux. Les Hopopops, c'est ta motivation, ton énergie, ta niaque à continuer de crapahuter dans les rues d'Aix plutôt que de rentrer te coucher — une sorte de points de vie, mais version _j'ai plus la force_. Tu démarres avec 10. S'ils tombent à 0... Luce s'effondre. Littéralement. Tout de suite. Game over. Ménage-les comme tu ménagerais ton dernier calisson du matin.",
     },
   ];
 

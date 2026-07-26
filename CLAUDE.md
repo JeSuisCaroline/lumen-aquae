@@ -106,13 +106,13 @@ Chaque réponse porte directement sa **destination** (nom du fragment vers leque
 ### Architecture technique actuelle
 - `src/app/shared/models/story-flow.model.ts` : modèles (`CanvasDocument`, `CanvasNode`/`CanvasEdge` avec `label?`, `RiddleFrontmatter`, `RoutingFrontmatter`, `Fragment` avec `outgoingChoices: OutgoingChoice[]` (`{ name, label? }`, un par flèche sortante du canvas)).
 - `src/app/core/services/story-flow/story-flow.parser.ts` : fonctions pures de parsing (canvas JSON + frontmatter JSON des fragments).
-- `src/app/core/services/story-flow/story-flow.service.ts` (`StoryFlowService`) : charge canvas + fragments (RxJS pour le chargement HTTP initial uniquement), construit le graphe (`fragmentsByName`, `outgoingChoices` par fragment, détection du fragment de départ via absence d'arête entrante), expose l'état en **Signals** (`currentFragment`, `canvasLoaded`), et offre une navigation **synchrone** une fois le graphe chargé (`goToFragment(name)`, `submitRiddleAnswer(text)`, `restartStory()` → revient au fragment de départ). Il délègue tout l'état du joueur (Florins, Hophophops, score) à `PlayerStateService` (injecté), sans en connaître le détail.
-- `src/app/core/services/player-state/player-state.service.ts` (`PlayerStateService`, anciennement `LuceStateService`) : possède exclusivement l'état du joueur — Signals `florins`/`hophophops`/`score`, `applyEffects(effects)` (Florins/Hophophops, appliqué par `StoryFlowService.goToFragment()` à chaque fragment atteint), `incrementScore(amount)`/`resetScore()` (score des énigmes, appelés par `submitRiddleAnswer`/`readTrackedVariable`/`resetTrackedVariable`), et `reset()` (remet les trois à leurs valeurs initiales, appelé par `restartStory()`). Voir section Florins & Hophophops ci-dessous.
+- `src/app/core/services/story-flow/story-flow.service.ts` (`StoryFlowService`) : charge canvas + fragments (RxJS pour le chargement HTTP initial uniquement), construit le graphe (`fragmentsByName`, `outgoingChoices` par fragment, détection du fragment de départ via absence d'arête entrante), expose l'état en **Signals** (`currentFragment`, `canvasLoaded`), et offre une navigation **synchrone** une fois le graphe chargé (`goToFragment(name)`, `submitRiddleAnswer(text)`, `restartStory()` → revient au fragment de départ). Il délègue tout l'état du joueur (Florins, Hopopops, score) à `PlayerStateService` (injecté), sans en connaître le détail.
+- `src/app/core/services/player-state/player-state.service.ts` (`PlayerStateService`, anciennement `LuceStateService`) : possède exclusivement l'état du joueur — Signals `florins`/`Hopopops`/`score`, `applyEffects(effects)` (Florins/Hopopops, appliqué par `StoryFlowService.goToFragment()` à chaque fragment atteint), `incrementScore(amount)`/`resetScore()` (score des énigmes, appelés par `submitRiddleAnswer`/`readTrackedVariable`/`resetTrackedVariable`), et `reset()` (remet les trois à leurs valeurs initiales, appelé par `restartStory()`). Voir section Florins & Hopopops ci-dessous.
 - `src/app/core/services/game/game.service.ts` (`GameService`) : couche de présentation au-dessus de `StoryFlowService` **et** `PlayerStateService` — mappe `Fragment` → `Step` (`mapFragmentToStep`) et `outgoingChoices`/`answers` → `Choice[]` (`mapFragmentChoices`, c'est ici que le fallback "Continuer" est appliqué).
 - Pas de fichier de test pour ces services pour l'instant (demandé explicitement).
 - `angular.json` expose désormais `src/app/data/Canvas from 12 07 26` et `src/app/data/FRAGMENTS` comme assets statiques (`/data/...`), sans quoi `HttpClient` recevrait des 404.
 
-✅ **`GameService` (`core/services/game/game.service.ts`) est branché sur `StoryFlowService`/`PlayerStateService`** : il expose `isReady`/`florins`/`hophophops`/`currentStep`, et délègue la navigation (`goToStep`, `restart`) à `goToFragment`/`submitRiddleAnswer`/`restartStory`. L'ancien prototype statique (`SCENARIO`, `players.luce`/`players.escur`, `sharedFlags`) n'est plus utilisé (fichier `data/scenario.ts` supprimé).
+✅ **`GameService` (`core/services/game/game.service.ts`) est branché sur `StoryFlowService`/`PlayerStateService`** : il expose `isReady`/`florins`/`Hopopops`/`currentStep`, et délègue la navigation (`goToStep`, `restart`) à `goToFragment`/`submitRiddleAnswer`/`restartStory`. L'ancien prototype statique (`SCENARIO`, `players.luce`/`players.escur`, `sharedFlags`) n'est plus utilisé (fichier `data/scenario.ts` supprimé).
 
 ⚠️ Ne jamais inventer une "bonne réponse" (`valid: true`) dans un fragment `RIDDLE_` sans confirmation explicite de l'utilisateur.
 
@@ -131,17 +131,17 @@ Le corps (`content`) d'un fragment passe par le pipe `MarkdownEmphasisPipe` (`sr
 
 Le **titre** du fragment (`text` du composant `lumen-title`) ne passe pas par ce pipe et n'interprète donc aucune emphase.
 
-### 💰⚡ Florins & Hophophops (ressources de Luce)
+### 💰⚡ Florins & Hopopops (ressources de Luce)
 
 Deux compteurs suivent l'état de Luce tout au long du parcours :
 - **Florins** : monnaie du jeu (sert à acheter des objets — inventaire pas encore implémenté).
-- **Hophophops** : points de motivation. **À 0, c'est le game over** (redirection automatique, cf. plus bas).
+- **Hopopops** : points de motivation. **À 0, c'est le game over** (redirection automatique, cf. plus bas).
 
-Les deux démarrent à **10** (`INITIAL_FLORINS`/`INITIAL_HOPHOPHOPS` dans `player-state.service.ts`) et sont remis à 10 par `PlayerStateService.reset()` (appelé depuis `restartStory()`, qui remet aussi `score` à 0). Tout l'état du joueur vit dans **`PlayerStateService`** (Florins, Hophophops, **et** `score` — la variable de tracking des énigmes) — `StoryFlowService` se contente d'appeler `playerState.applyEffects(fragment.frontmatter)` à chaque fragment atteint, sans connaître `FLO`/`HOP` autrement que via ce passage.
+Les deux démarrent à **10** (`INITIAL_FLORINS`/`INITIAL_HOPOPOPS` dans `player-state.service.ts`) et sont remis à 10 par `PlayerStateService.reset()` (appelé depuis `restartStory()`, qui remet aussi `score` à 0). Tout l'état du joueur vit dans **`PlayerStateService`** (Florins, Hopopops, **et** `score` — la variable de tracking des énigmes) — `StoryFlowService` se contente d'appeler `playerState.applyEffects(fragment.frontmatter)` à chaque fragment atteint, sans connaître `FLO`/`HOP` autrement que via ce passage.
 
-**Comment les faire varier dans Obsidian** : ajoute (ou complète) le frontmatter JSON d'un fragment avec `FLO` (Florins) et/ou `HOP` (Hophophops) — des **entiers signés** (positif = gain, négatif = perte) :
+**Comment les faire varier dans Obsidian** : ajoute (ou complète) le frontmatter JSON d'un fragment avec `FLO` (Florins) et/ou `HOP` (Hopopops) — des **entiers signés** (positif = gain, négatif = perte) :
 
-Exemple (perd 3 Florins et gagne 2 Hophophops en arrivant sur ce fragment) :
+Exemple (perd 3 Florins et gagne 2 Hopopops en arrivant sur ce fragment) :
 ```
 ---
 {
@@ -155,11 +155,11 @@ Texte affiché au joueur.
 
 ⚠️ Ça marche sur **n'importe quel fragment**, y compris `standard` (auparavant les fragments `standard` n'avaient jamais de frontmatter — `parseFragmentMarkdown` le garde désormais au lieu de le jeter). Ça fonctionne aussi sur les `RIDDLE_`/`RESULT_` en ajoutant `FLO`/`HOP` à côté de `question`/`answers` ou `variable_to_test`/`branches`.
 
-L'effet s'applique **une fois, dès que le joueur atteint le fragment** (y compris les `RESULT_` traversés automatiquement lors d'une redirection) — cf. `PlayerStateService.applyEffects()`, appelée par `StoryFlowService.goToFragment()` en tout début de méthode. **Ni les Florins ni les Hophophops ne descendent sous 0** (`Math.max(0, ...)`), même avec une valeur `FLO`/`HOP` très négative.
+L'effet s'applique **une fois, dès que le joueur atteint le fragment** (y compris les `RESULT_` traversés automatiquement lors d'une redirection) — cf. `PlayerStateService.applyEffects()`, appelée par `StoryFlowService.goToFragment()` en tout début de méthode. **Ni les Florins ni les Hopopops ne descendent sous 0** (`Math.max(0, ...)`), même avec une valeur `FLO`/`HOP` très négative.
 
-**Game over automatique** : `GameService` observe `playerState.hophophops` via un `effect()` dans son constructeur — dès que la valeur atteint 0, navigation automatique vers `/game-over` (`GameOverComponent`), qui affiche un texte humoristique et un bouton "Retour à l'accueil" (`gameService.restart()` puis navigation vers `/welcome`, pour repartir sur des compteurs propres).
+**Game over automatique** : `GameService` observe `playerState.hopopops` via un `effect()` dans son constructeur — dès que la valeur atteint 0, navigation automatique vers `/game-over` (`GameOverComponent`), qui affiche un texte humoristique et un bouton "Retour à l'accueil" (`gameService.restart()` puis navigation vers `/welcome`, pour repartir sur des compteurs propres).
 
-**Affichage** : `PlayerStatusComponent` (`lumen-player-status`, `src/app/features/player-status/`, anciennement `LuceStatusComponent`/`lumen-luce-status`) montre les deux compteurs (icône + chiffre + libellé "Florins"/"Hophophops"), fond doré (`colors.$lumen-gold`). Il est intégré au **centre du header** (`header.component.html`, grille 3 colonnes `1fr auto 1fr` pour un centrage indépendant des largeurs du titre et du bouton retour) — donc visible **uniquement sur `/game`** (là où `lumen-header` est rendu), pas sur `/welcome`/`/tuto`/`/game-over`. Le badge Hophophops pulse en rouge quand il reste ≤ 3 points.
+**Affichage** : `PlayerStatusComponent` (`lumen-player-status`, `src/app/features/player-status/`, anciennement `LuceStatusComponent`/`lumen-luce-status`) montre les deux compteurs (icône + chiffre + libellé "Florins"/"Hopopops"), fond doré (`colors.$lumen-gold`). Il est intégré au **centre du header** (`header.component.html`, grille 3 colonnes `1fr auto 1fr` pour un centrage indépendant des largeurs du titre et du bouton retour) — donc visible **uniquement sur `/game`** (là où `lumen-header` est rendu), pas sur `/welcome`/`/tuto`/`/game-over`. Le badge Hopopops pulse en rouge quand il reste ≤ 3 points.
 
 ---
 
@@ -199,7 +199,7 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 | `/welcome` (défaut : `''` y redirige) | `WelcomeComponent` | Écran d'accueil : titre, texte d'intro, boutons "commencer" / "tuto" |
 | `/tuto` | `TutoComponent` | Vide pour l'instant, juste un bouton retour vers `/welcome` |
 | `/game` | `GameComponent` | Le jeu à proprement parler (header + inventaire + step) |
-| `/game-over` | `GameOverComponent` | Affiché automatiquement quand `hophophops` atteint 0 |
+| `/game-over` | `GameOverComponent` | Affiché automatiquement quand `Hopopops` atteint 0 |
 | `**` | — | Redirige vers `/welcome` |
 
 ## 🚀 DÉPLOIEMENT VERCEL
@@ -254,7 +254,7 @@ Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les c
 
 ### Services
 - **Injectables** : `providedIn: 'root'`
-- **GameService** : État global du jeu (currentStep, florins, hophophops)
+- **GameService** : État global du jeu (currentStep, florins, Hopopops)
 - **PlayerService** : Données du joueur actuel
 
 ## 🎯 FONCTIONNALITÉS À IMPLÉMENTER
@@ -285,11 +285,11 @@ Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les c
 ### Monnaie
 - **Florins** : Unité de valeur du jeu, démarre à 10
 - **Signal** : `GameService.florins` (dérivé de `PlayerStateService.florins`)
-- **Variation** : champ `FLO` dans le frontmatter d'un fragment (cf. section Florins & Hophophops)
+- **Variation** : champ `FLO` dans le frontmatter d'un fragment (cf. section Florins & Hopopops)
 
 ### Motivation
-- **Hophophops** : Points de motivation de Luce, démarre à 10, plancher à 0
-- **Signal** : `GameService.hophophops` (dérivé de `PlayerStateService.hophophops`)
+- **Hopopops** : Points de motivation de Luce, démarre à 10, plancher à 0
+- **Signal** : `GameService.hopopops` (dérivé de `PlayerStateService.hopopops`)
 - **Variation** : champ `HOP` dans le frontmatter d'un fragment
 - **À 0** : redirection automatique vers `/game-over`
 

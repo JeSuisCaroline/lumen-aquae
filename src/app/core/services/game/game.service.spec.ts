@@ -64,7 +64,7 @@ Question`;
     expect(service.isReady()).toBe(true);
     expect(service.currentStep().id).toBe('Start');
     expect(service.florins()).toBe(10);
-    expect(service.hophophops()).toBe(10);
+    expect(service.hopopops()).toBe(10);
   });
 
   it('should navigate to a standard fragment', () => {
@@ -72,13 +72,13 @@ Question`;
     expect(service.currentStep().id).toBe('RIDDLE_Test');
   });
 
-  it('should route to the _OK fragment on a valid riddle answer, without affecting florins/hophophops', () => {
+  it('should route to the _OK fragment on a valid riddle answer, without affecting florins/hopopops', () => {
     service.goToStep('RIDDLE_Test');
     service.goToStep('Bonne réponse');
 
     expect(service.currentStep().id).toBe('Test_OK');
     expect(service.florins()).toBe(10);
-    expect(service.hophophops()).toBe(10);
+    expect(service.hopopops()).toBe(10);
   });
 
   it('should route to the _KO fragment on an invalid riddle answer', () => {

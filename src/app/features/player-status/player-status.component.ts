@@ -13,6 +13,6 @@ export class PlayerStatusComponent {
   private readonly gameService = inject(GameService);
 
   readonly florins = this.gameService.florins;
-  readonly hophophops = this.gameService.hophophops;
-  readonly isLowHophophops = computed(() => this.hophophops() > 0 && this.hophophops() <= 3);
+  readonly hopopops = this.gameService.hopopops;
+  readonly isLowHopopops = computed(() => this.hopopops() > 0 && this.hopopops() <= 3);
 }

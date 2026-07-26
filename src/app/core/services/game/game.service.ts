@@ -15,7 +15,7 @@ export class GameService {
 
   readonly isReady = this.storyFlow.canvasLoaded;
   readonly florins = this.playerState.florins;
-  readonly hophophops = this.playerState.hophophops;
+  readonly hopopops = this.playerState.hopopops;
   readonly fragmentNames = this.storyFlow.fragmentNames;
   readonly currentStep = computed<Step>(() => this.mapFragmentToStep(this.storyFlow.currentFragment()));
 
@@ -23,7 +23,7 @@ export class GameService {
     this.storyFlow.loadAndInitializeCanvasGraph().subscribe();
 
     effect(() => {
-      if (this.playerState.hophophops() <= 0) {
+      if (this.playerState.hopopops() <= 0) {
         this.router.navigateByUrl('/game-over');
       }
     });
