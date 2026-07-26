@@ -1,8 +1,32 @@
 <div class="tuto-container">
-  <lumen-button
-    id="back-to-welcome-button"
-    text="Retour"
-    icon="rewind"
-    (clicked)="backToWelcome()"
-  ></lumen-button>
+  <div class="tuto-content">
+    <lumen-title
+      text="Le B.A.-BA de l'aventurière (pressée)"
+      level="h1"
+      description="Trois minutes pour tout comprendre. Après, tu n'auras plus aucune excuse."
+    ></lumen-title>
+
+    <div class="tuto-sections">
+      @for (card of cards; track card.title) {
+        <lumen-tuto-card
+          [icon]="card.icon"
+          [color]="card.color"
+          [title]="card.title"
+          [description]="card.description"
+        ></lumen-tuto-card>
+      }
+    </div>
+
+    <p class="tuto-footnote">
+      Un raté, une envie de repartir à zéro sans jugement ? Le bouton en forme de flèche tout en
+      haut du jeu te ramène gentiment au début de l'histoire.
+    </p>
+
+    <lumen-button
+      id="back-to-welcome-button"
+      text="Retour"
+      icon="rewind"
+      (clicked)="backToWelcome()"
+    ></lumen-button>
+  </div>
 </div>

@@ -1,0 +1,7 @@
+<section class="tuto-card" [ngClass]="'tuto-card--' + color">
+  <div class="tuto-card__header">
+    <lumen-icon [name]="icon" size="1.4rem"></lumen-icon>
+    <h2>{{ title }}</h2>
+  </div>
+  <p [innerHTML]="description | markdownEmphasis"></p>
+</section>

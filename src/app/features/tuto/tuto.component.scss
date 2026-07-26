@@ -1,7 +1,31 @@
 .tuto-container {
   min-height: 100dvh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 32px 20px;
+}
+
+.tuto-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 640px;
+  width: 100%;
+  text-align: center;
+}
+
+.tuto-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.tuto-footnote {
+  font-style: italic;
+  opacity: 0.75;
+  max-width: 480px;
+  margin: 0;
 }

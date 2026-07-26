@@ -1,0 +1,44 @@
+@use 'sass:color';
+@use '../../../shared/styles/colors' as colors;
+
+.tuto-card {
+  border-radius: 16px;
+  padding: 16px 20px;
+  border: 1px solid colors.$abyss-teal;
+  color: colors.$abyss-teal;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 8px;
+
+    h2 {
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.1rem;
+    }
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  &--blue {
+    background: color.scale(colors.$lumen-blue, $lightness: 82%, $saturation: -20%);
+  }
+
+  &--violet {
+    background: color.scale(colors.$lumen-violet, $lightness: 78%, $saturation: -15%);
+  }
+
+  &--gold {
+    background: color.scale(colors.$lumen-gold, $lightness: 60%, $saturation: -10%);
+  }
+
+  &--danger {
+    background: color.scale(colors.$lumen-danger, $lightness: 70%, $saturation: -10%);
+    border-color: colors.$lumen-danger;
+  }
+}
