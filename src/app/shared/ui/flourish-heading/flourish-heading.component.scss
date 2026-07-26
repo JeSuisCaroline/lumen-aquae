@@ -1,0 +1,27 @@
+@use '../../styles/colors' as colors;
+
+.flourish-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.flourish-heading__line {
+  position: relative;
+  width: 140px;
+  height: 1px;
+  background: colors.$lumen-gold;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: colors.$lumen-gold;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+}

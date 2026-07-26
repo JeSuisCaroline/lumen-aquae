@@ -201,7 +201,20 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 | `/game-over` | `GameOverComponent` | Affiché automatiquement quand `hophophops` atteint 0 |
 | `**` | — | Redirige vers `/welcome` |
 
+## 🎨 DESIGN GÉNÉRAL DE L'APP
+
+Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les couleurs viennent d'une source unique, `src/app/shared/styles/_colors.scss` :
+- `$lumen-blue` (bleu principal), `$lumen-gold` (or), `$abyss-teal` (bordures/texte sombre), `$lumen-violet` et `$lumen-danger` (accents secondaires, ex. cartes du tuto, écran game-over).
+- ⚠️ **Ne jamais coder une couleur en dur dans un composant** — toujours `@use '.../shared/styles/colors' as colors;` puis `colors.$lumen-blue` etc. Pour des variations (plus clair/foncé), utiliser `color.scale(colors.$xxx, $lightness: ...)`, jamais une nouvelle valeur hexa ad hoc.
+- Motifs visuels établis à réutiliser (ne pas réinventer) : boutons/badges en pilule avec dégradé bleu/or, cartes "parchemin" à bordure colorée (`tuto-card`), fioritures dorées autour d'un titre (`lumen-flourish-heading`), fond de page en dégradé + motif SVG décoratif discret en arrière-plan (fontaine sur `/welcome`, éclair éteint sur `/game-over`).
+
 ## 🎨 CONVENTIONS DE CODE
+
+### Philosophie (IMPORTANT)
+- **Composants génériques** : privilégier un composant réutilisable et paramétrable (via `@Input()`) plutôt qu'un composant figé pour un seul écran. Exemples : `ButtonComponent` (icône en paramètre), `TutoCardComponent` (icône/couleur/titre/description en paramètre), `IconComponent` (registre d'icônes central).
+- **Factorisation** : dès qu'un motif (style, markup, logique) est utilisé à 2 endroits, l'extraire en composant/fonction partagé plutôt que de dupliquer (ex. `FlourishHeadingComponent` factorisé entre `/tuto` et `/game` dès la 2ᵉ utilisation).
+- **Variabilisation** : éviter le texte/les couleurs/les valeurs "en dur" dans les templates. Titres, descriptions, couleurs de carte, etc. doivent être des `@Input()` ou des données du composant (ex. le tableau `cards` de `TutoComponent`), pas des chaînes écrites directement dans le HTML.
+- **Imbrication de petits composants** : préférer plusieurs petits composants ciblés (icône, carte, bouton, en-tête à fioritures...) composés ensemble, plutôt qu'un gros composant monolithique qui fait tout.
 
 ### Composants
 - **Standalone** : `standalone: true` obligatoire
@@ -240,13 +253,13 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 
 ### Monnaie
 - **Florins** : Unité de valeur du jeu, démarre à 10
-- **Signal** : `GameService.florins` (dérivé de `StoryFlowService.florins`)
-- **Variation** : champ `florins` dans le frontmatter d'un fragment (cf. section Florins & Hophophops)
+- **Signal** : `GameService.florins` (dérivé de `PlayerStateService.florins`)
+- **Variation** : champ `FLO` dans le frontmatter d'un fragment (cf. section Florins & Hophophops)
 
 ### Motivation
 - **Hophophops** : Points de motivation de Luce, démarre à 10, plancher à 0
-- **Signal** : `GameService.hophophops` (dérivé de `StoryFlowService.hophophops`)
-- **Variation** : champ `hophophops` dans le frontmatter d'un fragment
+- **Signal** : `GameService.hophophops` (dérivé de `PlayerStateService.hophophops`)
+- **Variation** : champ `HOP` dans le frontmatter d'un fragment
 - **À 0** : redirection automatique vers `/game-over`
 
 
@@ -275,5 +288,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v2.2 | Maj: 2026-07-25**
+**CLAUDE.md v2.3 | Maj: 2026-07-26**
 

@@ -1,5 +1,5 @@
-import { Component, Input, inject } from '@angular/core';
-import { TitleComponent } from '../../shared/ui/title/title.component';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { PlayerStatusComponent } from '../player-status/player-status.component';
 import { GameService } from '../../core/services/game/game.service';
@@ -7,15 +7,16 @@ import { GameService } from '../../core/services/game/game.service';
 @Component({
   selector: 'lumen-header',
   standalone: true,
-  imports: [TitleComponent, ButtonComponent, PlayerStatusComponent],
+  imports: [ButtonComponent, PlayerStatusComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-  @Input() title = "Aix-en-Provence : Le Mystère";
   private readonly gameService = inject(GameService);
+  private readonly router = inject(Router);
 
   onRestart(): void {
     this.gameService.restart();
+    this.router.navigateByUrl('/welcome');
   }
 }

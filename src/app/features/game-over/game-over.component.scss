@@ -1,10 +1,61 @@
+@use 'sass:color';
+@use '../../shared/styles/colors' as colors;
+
 .game-over-container {
+  position: relative;
+  overflow: hidden;
   min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 38%, rgba(168, 50, 50, 0.28), transparent 65%),
+    linear-gradient(180deg, color.scale(colors.$abyss-teal, $lightness: -15%) 0%, #0a0808 100%);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 2 4 14h6l-1 8 9-12h-6l1-8z' fill='%23a83232'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center 28%;
+    background-size: 260px 260px;
+    opacity: 0.14;
+    filter: blur(1.5px) grayscale(0.3);
+    animation: game-over-flicker 3.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+.game-over-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 28px;
-  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  padding: 32px 28px;
+  border-radius: 20px;
+  background: rgba(250, 238, 238, 0.94);
+  border: 1px solid colors.$lumen-danger;
+  box-shadow: 0 8px 34px rgba(0, 0, 0, 0.5);
   text-align: center;
+}
+
+@keyframes game-over-flicker {
+  0%,
+  100% {
+    opacity: 0.14;
+  }
+  45% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.18;
+  }
+  55% {
+    opacity: 0.05;
+  }
 }

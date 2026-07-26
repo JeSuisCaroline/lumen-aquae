@@ -1,8 +1,19 @@
+@use 'sass:color';
+@use '../../shared/styles/colors' as colors;
+
 .tuto-container {
+  position: relative;
   min-height: 100dvh;
   display: flex;
   justify-content: center;
   padding: 32px 20px;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 60%),
+    linear-gradient(
+      180deg,
+      color.scale(colors.$lumen-gold, $lightness: 75%, $saturation: -20%) 0%,
+      color.scale(colors.$lumen-blue, $lightness: 70%, $saturation: -25%) 100%
+    );
 }
 
 .tuto-content {

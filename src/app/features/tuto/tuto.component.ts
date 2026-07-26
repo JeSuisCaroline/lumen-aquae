@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { TitleComponent } from '../../shared/ui/title/title.component';
+import { FlourishHeadingComponent } from '../../shared/ui/flourish-heading/flourish-heading.component';
 import { TutoCardComponent, type TutoCardColor } from './tuto-card/tuto-card.component';
 import type { IconName } from '../../shared/icons/icon-registry';
 
@@ -15,7 +16,7 @@ interface TutoCard {
 @Component({
   selector: 'lumen-tuto',
   standalone: true,
-  imports: [ButtonComponent, TitleComponent, TutoCardComponent],
+  imports: [ButtonComponent, TitleComponent, FlourishHeadingComponent, TutoCardComponent],
   templateUrl: './tuto.component.html',
   styleUrls: ['./tuto.component.scss'],
 })

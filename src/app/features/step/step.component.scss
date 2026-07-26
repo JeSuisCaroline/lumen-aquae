@@ -1,33 +1,23 @@
+@use 'sass:color';
+@use '../../shared/styles/colors' as colors;
+
 .step-container {
-  backdrop-filter: blur(12px); // L'effet de flou "verre"
+  position: relative;
+  backdrop-filter: blur(12px);
   border-radius: 25px;
   padding: 25px;
   margin: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid colors.$lumen-blue;
+  box-shadow:
+    inset 0 0 0 1px rgba(colors.$lumen-gold, 0.4),
+    0 8px 32px 0 rgba(0, 0, 0, 0.3);
   text-align: center;
 
-  background: #ff930f;
-  background-blend-mode: multiply;
-  background: linear-gradient(to top, #ff930f, #ffcc33);
-
-  .step-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--lumen-blue); // Ton bleu défini plus tôt
-  }
-
-  .step-title {
-    font-size: 1.5rem;
-    color: var(--lumen-blue);
-    margin-bottom: 10px;
-  }
-
-  .step-description {
-    font-weight: bolder;
-  }
+  background: linear-gradient(
+    160deg,
+    color.scale(colors.$lumen-gold, $lightness: 70%, $saturation: -15%) 0%,
+    color.scale(colors.$lumen-blue, $lightness: 75%, $saturation: -20%) 100%
+  );
 
   .step-gap {
     height: 1.25rem;
@@ -39,5 +29,4 @@
     align-items: center;
     gap: 1rem;
   }
-
 }

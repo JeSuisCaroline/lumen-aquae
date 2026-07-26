@@ -1,22 +1,24 @@
 <div class="welcome-container">
-  <lumen-title
-    text="Salut à toi !"
-    level="h1"
-    description="Une aventure t'attend dans les rues d'Aix-en-Provence, entre énigmes et choix qui façonneront ton parcours."
-  ></lumen-title>
+  <div class="welcome-panel">
+    <lumen-title
+      text="Salut à toi !"
+      level="h1"
+      description="Une aventure t'attend dans les rues d'Aix-en-Provence, entre énigmes et choix qui façonneront ton parcours."
+    ></lumen-title>
 
-  <div class="welcome-actions">
-    <lumen-button
-      id="start-story-button"
-      text="On a assez perdu de temps, c'est parti !"
-      icon="spark"
-      (clicked)="startStory()"
-    ></lumen-button>
-    <lumen-button
-      id="open-tuto-button"
-      text="Oulala, pas si vite, explique-moi d'abord."
-      icon="help"
-      (clicked)="openTuto()"
-    ></lumen-button>
+    <div class="welcome-actions">
+      <lumen-button
+        id="start-story-button"
+        text="On a assez perdu de temps, c'est parti !"
+        icon="spark"
+        (clicked)="startStory()"
+      ></lumen-button>
+      <lumen-button
+        id="open-tuto-button"
+        text="Oulala, pas si vite, explique-moi d'abord."
+        icon="help"
+        (clicked)="openTuto()"
+      ></lumen-button>
+    </div>
   </div>
 </div>

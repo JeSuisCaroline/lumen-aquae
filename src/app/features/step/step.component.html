@@ -1,9 +1,11 @@
 <div class="step-container">
-  <lumen-title
-    [text]="gameService.currentStep().title"
-    level="h2"
-    [description]="gameService.currentStep().description">
-  </lumen-title>
+  <lumen-flourish-heading>
+    <lumen-title
+      [text]="gameService.currentStep().title"
+      level="h2"
+      [description]="gameService.currentStep().description">
+    </lumen-title>
+  </lumen-flourish-heading>
 
   <div class="step-gap" aria-hidden="true"></div>
 
