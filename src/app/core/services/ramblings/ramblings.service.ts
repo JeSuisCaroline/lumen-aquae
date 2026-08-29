@@ -45,7 +45,19 @@ export class RamblingsService {
     this.pendingIds.clear();
   }
 
+  // Restaure des divagations déjà débloquées lors d'une partie précédente (sauvegarde) :
+  // contrairement à unlock(), ça ne compte jamais comme une nouvelle divagation non lue.
+  public restore(ids: string[]): void {
+    for (const id of ids) {
+      this.fetchAndAdd(id, false);
+    }
+  }
+
   private unlock(id: string): void {
+    this.fetchAndAdd(id, true);
+  }
+
+  private fetchAndAdd(id: string, countAsUnread: boolean): void {
     const alreadyKnown = this.ramblingsSignal().some((candidate) => candidate.id === id) || this.pendingIds.has(id);
     if (alreadyKnown) {
       return;
@@ -59,7 +71,9 @@ export class RamblingsService {
       next: ([rambling, manifest]) => {
         this.pendingIds.delete(id);
         this.ramblingsSignal.update((list) => [...list, this.withImage(rambling, manifest[id])]);
-        this.unreadCountSignal.update((count) => count + 1);
+        if (countAsUnread) {
+          this.unreadCountSignal.update((count) => count + 1);
+        }
       },
       error: (error) => {
         this.pendingIds.delete(id);

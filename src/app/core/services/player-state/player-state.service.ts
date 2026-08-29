@@ -44,4 +44,10 @@ export class PlayerStateService {
     this.hopopopsSignal.set(INITIAL_HOPHOPHOPS);
     this.resetScore();
   }
+
+  public restore(florins: number, hopopops: number, score: number): void {
+    this.florinsSignal.set(florins);
+    this.hopopopsSignal.set(hopopops);
+    this.scoreSignal.set(score);
+  }
 }

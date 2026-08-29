@@ -20,8 +20,10 @@ export class HeaderComponent {
   readonly hasNewRambling = this.gameService.hasUnreadRambling;
   readonly ramblingMessage = 'Divagation du Fou disponible !';
 
-  onRestart(): void {
-    this.gameService.restart();
+  // Ne réinitialise plus la partie : la sauvegarde se met déjà à jour à chaque fragment atteint
+  // (cf. GameService), donc revenir à l'accueil laisse la progression intacte pour "Reprendre".
+  // Le reset explicite se fait désormais uniquement via "Nouvelle partie" sur /welcome.
+  onBackToWelcome(): void {
     this.router.navigateByUrl('/welcome');
   }
 

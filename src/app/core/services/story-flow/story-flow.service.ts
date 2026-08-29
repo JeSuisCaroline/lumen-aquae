@@ -66,6 +66,20 @@ export class StoryFlowService {
     this.currentFragmentSignal.set(fragment);
   }
 
+  // Restaure la position atteinte lors d'une partie précédente (sauvegarde) : contrairement à
+  // goToFragment(), n'applique pas les effets (FLO/HOP/RAMBLING) du fragment restauré, puisque
+  // les ressources sauvegardées reflètent déjà l'état cumulé après leur application d'origine.
+  public restoreFragment(fragmentName: string): boolean {
+    const fragment = this.fragmentsByName.get(fragmentName);
+    if (!fragment) {
+      console.warn(`Fragment de sauvegarde introuvable : "${fragmentName}". Reprise depuis le début.`);
+      return false;
+    }
+
+    this.currentFragmentSignal.set(fragment);
+    return true;
+  }
+
   public restartStory(): void {
     if (!this.startFragmentName) {
       throw new Error("Aucun fragment de départ n'a été identifié dans le canvas.");

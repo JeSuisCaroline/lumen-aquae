@@ -12,12 +12,12 @@
   </div>
   <div class="header-right">
     <lumen-button
-      id="restart-button"
-      text="Retour au début"
-      title="Revenir au début de l'histoire"
+      id="back-to-welcome-button"
+      text="Retour à l'accueil"
+      title="Revenir à l'écran d'accueil (ta progression est conservée)"
       icon="rewind"
       [compact]="true"
-      (clicked)="onRestart()">
+      (clicked)="onBackToWelcome()">
     </lumen-button>
   </div>
   @if (hasNewRambling()) {

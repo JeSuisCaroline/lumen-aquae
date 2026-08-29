@@ -207,13 +207,13 @@ Et dans `DIVAGATIONS/fontaine-rotonde.md` :
 - `src/app/core/services/ramblings/ramblings.parser.ts` : `parseRamblingMarkdown(raw, id)` — réutilise `splitFrontmatter` (exporté depuis `story-flow.parser.ts`) pour tolérer un éventuel `---{...}---`, puis `JSON.parse`. Ne lit que `title`/`text` — les images ne passent **jamais** par ce parseur ni par le contenu Obsidian (cf. section dédiée plus bas).
 - `src/app/core/services/ramblings/ramblings.service.ts` (`RamblingsService`) : contrairement aux fragments (préchargés via le canvas), les divagations sont chargées **à la demande** — `applyEffects(effects)` lit `effects.RAMBLING` (l'id) et, s'il n'est pas déjà connu ou en cours de chargement (Set `pendingIds`, anti-doublon sur requêtes concurrentes), déclenche un `HttpClient.get` vers `/data/DIVAGATIONS/<id>.md` **en parallèle** (`forkJoin`) d'un fetch du manifest d'images (mis en cache via `shareReplay(1)`, un seul chargement pour toute la session). Une fois les deux résolus : fusion (`withImage()`), ajout à la liste (Signal `ramblings`), incrément du compteur non-lu. Expose aussi `totalCount` (computed), `hasUnread` (computed), `markAllRead()`, `reset()` (vide la liste, le compteur non-lu, **et** `pendingIds`).
 - `StoryFlowService.goToFragment()` appelle `ramblings.applyEffects(fragment.frontmatter)` juste après `playerState.applyEffects(...)` — donc une Divagation peut se débloquer sur n'importe quel fragment atteint, y compris un `RESULT_` traversé automatiquement.
-- **Reset** : `RamblingsService.reset()` est appelé par `StoryFlowService.restartStory()`, exactement comme `PlayerStateService.reset()` (Florins/Hopopops/score) — donc le bouton **"Retour au début"** (header) et l'écran **Game Over** ("Retour à l'accueil", qui appelle aussi `restart()`) remettent les divagations à zéro (liste vidée, compteur à 0). Naviguer entre routes (ex. ouvrir `/ramblings` puis "Fermer") ne réinitialise rien, les services sont `providedIn: 'root'`. Un rechargement complet de page (F5, URL tapée directement) réinitialise tout l'état par accident, faute de persistance (`localStorage`, toujours pas implémenté — cf. plus bas).
+- **Reset** : `RamblingsService.reset()` est appelé par `StoryFlowService.restartStory()`, exactement comme `PlayerStateService.reset()` (Florins/Hopopops/score) — donc seul l'écran **Game Over** ("Retour à l'accueil", qui appelle `restart()`) ou le bouton **"Nouvelle partie"** sur `/welcome` remettent les divagations à zéro (liste vidée, compteur à 0). Le bouton **"Retour à l'accueil"** du header, lui, ne réinitialise plus rien depuis l'implémentation de la sauvegarde (cf. section 💾 SAUVEGARDE DE PARTIE) — naviguer entre routes (ex. ouvrir `/ramblings` puis "Fermer", ou header → `/welcome` → "Reprendre") préserve l'état, les services sont `providedIn: 'root'`. Un rechargement complet de page (F5, URL tapée directement) recharge tout depuis la sauvegarde `localStorage` si elle existe (cf. plus bas) — ce n'est plus une perte d'état accidentelle.
 - `GameService` expose `ramblingsCount`, `hasUnreadRambling` et `ramblingsList` (= `RamblingsService.ramblings`, utilisé par la page), et `markRamblingsRead()`.
 
 **UI — icône, compteur, message (dans `HeaderComponent`, visible uniquement sur `/game`)** :
 - `FouIconComponent` (`lumen-fou-icon`, `src/app/features/fou-icon/`) : badge circulaire violet avec une icône placeholder (`jester` dans `ICON_REGISTRY` — à remplacer par un vrai portrait du Fou une fois l'asset fourni par l'utilisateur), intégré dans `header-left`. Inputs : `totalCount`, `hasNewRambling`. Cliquer dessus (`onFouIconClick()` dans `header.component.ts`) navigue vers `/ramblings`.
   - Bulle dorée en bas à droite de l'icône = `totalCount` (nombre total de Divagations débloquées depuis le début de la partie ; reste affiché même après lecture).
-  - Message « Divagation du Fou disponible ! » à droite de l'icône + halo doré pulsant (`fou-icon-pulse`, masqué sous 400px de large) tant qu'il existe au moins une Divagation **non lue** (`hasNewRambling`).
+  - Message « Divagation du Fou disponible ! » tant qu'il existe au moins une Divagation **non lue** (`hasNewRambling`), plus halo doré pulsant (`fou-icon-pulse`) sur l'icône elle-même. Au-dessus de 400px de large, le message s'affiche à droite de l'icône (`FouIconComponent`) ; en dessous (mobile), il bascule sur une **deuxième ligne centrée** du header (`.header-message` dans `header.component.html`/`.scss`, sous la rangée icône/status/bouton) — le texte du message est un `@Input() message` sur `FouIconComponent`, passé par `HeaderComponent` pour être réutilisé identique aux deux endroits.
 
 **UI — page « Les divagations du Fou » (`/ramblings`)** :
 - `RamblingsPageComponent` (`lumen-ramblings-page`, `src/app/features/ramblings-page/`) : dans son constructeur, appelle `gameService.markRamblingsRead()` (donc le badge "non lu" s'éteint dès l'ouverture de la page, pas au clic sur l'icône).
@@ -253,6 +253,42 @@ Et dans `DIVAGATIONS/fontaine-rotonde.md` :
 
 ---
 
+## 💾 SAUVEGARDE DE PARTIE (localStorage)
+
+### ✅ Implémentée (2026-08-29)
+La progression est sauvegardée automatiquement dans `localStorage` dès que le joueur **atteint un fragment** — y compris le tout premier fragment de l'histoire. C'est la règle produit retenue pour définir "une partie en cours" : dès qu'on a atteint le premier fragment (donc dès qu'on a cliqué sur "Commencer"), il y a quelque chose à reprendre.
+
+### Architecture
+- `src/app/shared/models/game-save.model.ts` : `GameSaveData { fragmentName, florins, hopopops, score, ramblingIds }`.
+- `src/app/core/services/game-save/game-save.service.ts` (`GameSaveService`) : lit/écrit la clé `lumen-aquae:save` dans `localStorage`. `hasSave()`/`load()`/`save()`/`clear()` sont gardées par `isPlatformBrowser` (précaution si une config SSR/prerender est activée un jour — le build actuel reste 100% statique côté client, cf. `outputMode: "static"` dans la section Déploiement Vercel).
+- `GameService` : un `effect()` dans son constructeur sauvegarde à **chaque changement** de `StoryFlowService.currentFragment` (florins/hopopops/score/ids des divagations débloquées inclus). Un autre bloc, exécuté une fois le canvas chargé (`restoreSaveIfAny()`), restaure une sauvegarde existante : `PlayerStateService.restore(florins, hopopops, score)` + `RamblingsService.restore(ramblingIds)` remettent l'état à plat, puis `StoryFlowService.restoreFragment(name)` positionne le fragment courant **sans ré-appliquer ses effets** (FLO/HOP/RAMBLING) puisqu'ils sont déjà comptés dans les valeurs sauvegardées.
+- `RamblingsService.restore(ids)` réutilise la même logique de fetch que `unlock()` (factorisée dans `fetchAndAdd(id, countAsUnread)`) mais sans incrémenter le compteur "non lu" — une divagation restaurée ne redéclenche jamais la pastille "nouvelle divagation".
+
+### Page d'accueil (`WelcomeComponent`) — 2 ou 3 boutons selon `GameSaveService.hasSave()`
+- **Pas de sauvegarde** → 2 boutons : "On a assez perdu de temps, c'est parti !" (`startStory()`, va vers `/game`) + Tuto.
+- **Sauvegarde existante** → 3 boutons : "Je reprends là où j'en étais !" (`resumeStory()`, va vers `/game` sans paramètre) / "Non, on efface tout et on recommence." (`startNewGame()`) / Tuto.
+- `hasSave` est lu **une seule fois** à la construction du composant (pas un Signal réactif) — suffisant puisque `WelcomeComponent` est recréé à chaque navigation vers `/welcome`.
+
+### ⚠️ Piège vécu : les services de jeu sont des singletons `providedIn: 'root'`
+`GameService`/`StoryFlowService`/`PlayerStateService`/`RamblingsService` ne sont **jamais recréés** tant que l'onglet reste ouvert — seule leur toute première construction dans l'onglet déclenche `loadAndInitializeCanvasGraph()` + la restauration éventuelle. Conséquence directe : si le joueur a déjà joué dans cet onglet puis revient à `/welcome`, cliquer sur "Nouvelle partie" ne suffit pas à réinitialiser l'état **en mémoire** — renaviguer vers `/game` ne relance pas le constructeur de `GameService`.
+- **Solution retenue** : `WelcomeComponent.startNewGame()` efface la sauvegarde (`gameSave.clear()`) **et** navigue vers `/game?fresh=true`. `GameComponent`, à sa construction, lit ce paramètre de requête et appelle `GameService.forceNewGame()`, qui force un `restartStory()` **seulement si** le canvas est déjà chargé (cas où l'utilisateur avait déjà joué dans cet onglet ; sinon l'amorçage normal du constructeur suffit déjà, la sauvegarde venant d'être effacée — pas de race condition sur le chargement asynchrone du canvas).
+
+### ⚠️ Piège vécu : `DevFragmentSearchComponent` faussait la détection "partie en cours"
+Ce composant dev (cf. section MODE DEV vs PROD ci-dessous) est rendu sur **toutes** les pages, y compris `/welcome`. Une première version l'injectait via un champ de classe (`private readonly gameService = inject(GameService)`), ce qui démarrait le moteur de jeu — et donc créait une sauvegarde — dès l'affichage de n'importe quelle page, **en dev et en prod** (son `@if(isDevMode())` interne ne fait que masquer le HTML, pas empêcher la construction du composant). Corrigé à deux niveaux :
+1. `app.component.html` gate désormais le tag `<lumen-dev-fragment-search>` lui-même avec `@if (isDevMode)` — il n'est plus du tout instancié en prod.
+2. En dev (où l'outil doit rester utilisable depuis n'importe quelle page, par design), `DevFragmentSearchComponent` injecte `GameService` **paresseusement** via un getter (`private get gameService() { return this.injector.get(GameService); }`) plutôt qu'un champ de classe — le moteur de jeu ne démarre qu'à la première recherche réellement tapée par le développeur, pas à l'affichage de la barre.
+
+⚠️ Avant d'ajouter un composant global affiché sur `/welcome` (dans `app.component.html` ou ailleurs), vérifier qu'il n'injecte pas `GameService`/`StoryFlowService` de façon eager (champ de classe) — ça fausserait silencieusement `hasSave()`.
+
+### Bouton "Retour à l'accueil" du header (`HeaderComponent`)
+⚠️ **Ne réinitialise plus la partie** (renommé, anciennement "Retour au début") — `onBackToWelcome()` navigue vers `/welcome` sans appeler `restart()`, précisément pour que "Reprendre" retrouve la position exacte où le joueur était. Seuls **"Nouvelle partie"** sur `/welcome` et l'écran **Game Over** (qui doit forcément reset, puisqu'on ne peut pas reprendre une sauvegarde à 0 Hopopops sans rebondir aussitôt sur `/game-over`) effacent réellement la progression.
+
+### Ce qui n'est PAS géré par la sauvegarde
+- Le statut "lu/non lu" des divagations n'est pas persisté tel quel : une divagation restaurée est toujours traitée comme déjà lue (cf. `RamblingsService.restore`).
+- Pas de synchronisation entre appareils/navigateurs : `localStorage` est local à l'origine + au navigateur du joueur.
+
+---
+
 ## 🧪 MODE DEV vs PROD (outils de debug)
 
 Certains éléments de l'UI sont conditionnés par `isDevMode()` (natif Angular, importé de `@angular/core`) : ils n'existent **que** quand l'app tourne en configuration `development`, jamais en `production`.
@@ -286,7 +322,7 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 
 | Route | Composant | Rôle |
 |---|---|---|
-| `/welcome` (défaut : `''` y redirige) | `WelcomeComponent` | Écran d'accueil : titre, texte d'intro, boutons "commencer" / "tuto" |
+| `/welcome` (défaut : `''` y redirige) | `WelcomeComponent` | Écran d'accueil : titre, texte d'intro, 2 boutons ("commencer" + "tuto") ou 3 si une sauvegarde existe ("reprendre" + "nouvelle partie" + "tuto") — cf. 💾 SAUVEGARDE DE PARTIE |
 | `/tuto` | `TutoComponent` | Vide pour l'instant, juste un bouton retour vers `/welcome` |
 | `/game` | `GameComponent` | Le jeu à proprement parler (header + step) |
 | `/game-over` | `GameOverComponent` | Affiché automatiquement quand `Hopopops` atteint 0 |
@@ -332,7 +368,7 @@ L'app enregistre un Service Worker en production (`app.config.ts` → `provideSe
 
 ✅ **Mise à jour automatique implémentée** : `AppUpdateService` (`src/app/core/services/app-update/app-update.service.ts`) s'abonne à `SwUpdate.versionUpdates`, filtre l'événement `VERSION_READY`, puis appelle `activateUpdate()` suivi d'un `document.location.reload()`. Câblé une seule fois, dans le constructeur d'`AppComponent` (`appUpdate.listenForUpdates()`). No-op silencieux si `swUpdate.isEnabled` est faux (donc rien ne se passe en dev).
 
-⚠️ **Choix assumé : rechargement 100% silencieux, sans bandeau de confirmation au joueur** — décision explicite de l'utilisateur (2026-08-29), en attendant l'implémentation d'un système de sauvegarde automatique (`localStorage`, cf. "🎯 FONCTIONNALITÉS À IMPLÉMENTER" → "Persistance", toujours pas fait). **Tant que cette sauvegarde n'existe pas, ce reload silencieux peut faire perdre la progression en cours** (Florins, Hopopops, position dans l'histoire, divagations débloquées — tout est en mémoire, rien n'est persisté) si une mise à jour est détectée en pleine partie. Ne pas "corriger" ça de sa propre initiative en ajoutant un bandeau de confirmation sans redemander — c'est un choix conscient, pas un oubli. En revanche, **le jour où la sauvegarde auto est implémentée, s'assurer qu'elle s'écrit avant (ou indépendamment de) ce reload**, pour que le silencieux redevienne réellement sans risque.
+⚠️ **Choix assumé : rechargement 100% silencieux, sans bandeau de confirmation au joueur** — décision explicite de l'utilisateur (2026-08-29). ✅ Depuis l'implémentation de la sauvegarde `localStorage` (cf. 💾 SAUVEGARDE DE PARTIE), ce reload silencieux est sans risque pour la progression : la sauvegarde s'écrit à chaque fragment atteint (indépendamment de ce flow de mise à jour), donc au retour après le `document.location.reload()`, `GameService` la retrouve et restaure automatiquement la position exacte. Ne pas ajouter de bandeau de confirmation de sa propre initiative sans redemander — c'est un choix conscient, pas un oubli, et il reste valable maintenant que la perte de progression n'est plus un risque réel.
 
 ## 🎨 DESIGN GÉNÉRAL DE L'APP
 
@@ -367,12 +403,12 @@ Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les c
 - API Angular 21 standalone
 - Structure de base (services, composants)
 - Service Worker PWA configuré
+- **Persistance** : sauvegarde de partie via `localStorage` (cf. 💾 SAUVEGARDE DE PARTIE)
 
 ### 🔲 À Développer
 - **Énigmes** : Saisie réponses + validation
 - **Inventaire UI** : Affichage/achat d'objets (les Florins existent déjà, l'inventaire d'objets reste à faire). ⚠️ L'ancien placeholder `InventoryComponent`/`lumen-inventory` (un `<div>` vide affiché entre le header et l'encadré du fragment sur `/game`) a été supprimé — vide visuellement mais toujours stylé, il ressemblait à un bandeau gris parasite. Rien ne réserve donc plus d'emplacement pour l'inventaire dans l'UI actuelle ; son futur emplacement est à décider au moment de l'implémenter, pas forcément à cet endroit-là.
 - **Conséquences dynamiques** : Crédibilité impact story
-- **Persistance** : localStorage pour sauvegarde partie
 - **Contenu du tuto** : `TutoComponent` est vide pour l'instant
 
 ### 🔮 Reporté à plus tard
@@ -423,5 +459,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v3.2 | Maj: 2026-08-29**
+**CLAUDE.md v3.3 | Maj: 2026-08-29**
 

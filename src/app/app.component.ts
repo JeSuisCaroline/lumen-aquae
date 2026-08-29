@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, isDevMode } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DevFragmentSearchComponent } from './features/dev-fragment-search/dev-fragment-search.component';
 import { AppUpdateService } from './core/services/app-update/app-update.service';
@@ -12,6 +12,8 @@ import { AppUpdateService } from './core/services/app-update/app-update.service'
 })
 export class AppComponent {
   private readonly appUpdate = inject(AppUpdateService);
+
+  readonly isDevMode = isDevMode();
 
   constructor() {
     this.appUpdate.listenForUpdates();

@@ -1,2 +1,4 @@
 <router-outlet></router-outlet>
-<lumen-dev-fragment-search></lumen-dev-fragment-search>
+@if (isDevMode) {
+  <lumen-dev-fragment-search></lumen-dev-fragment-search>
+}

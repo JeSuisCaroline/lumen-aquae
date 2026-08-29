@@ -1,4 +1,4 @@
-import { Component, computed, inject, isDevMode, signal } from '@angular/core';
+import { Component, computed, inject, isDevMode, signal, Injector } from '@angular/core';
 import { GameService } from '../../core/services/game/game.service';
 
 @Component({
@@ -8,7 +8,15 @@ import { GameService } from '../../core/services/game/game.service';
   styleUrls: ['./dev-fragment-search.component.scss'],
 })
 export class DevFragmentSearchComponent {
-  private readonly gameService = inject(GameService);
+  private readonly injector = inject(Injector);
+
+  // Injection paresseuse : ce composant est rendu sur toutes les pages en dev (cf. isDevMode
+  // ci-dessous), donc un inject(GameService) en champ de classe démarrerait le moteur de jeu
+  // (canvas + fragment de départ + sauvegarde) dès l'affichage de /welcome, faussant la détection
+  // "partie en cours" de WelcomeComponent. Ne construire GameService qu'à la première recherche.
+  private get gameService(): GameService {
+    return this.injector.get(GameService);
+  }
 
   readonly isDevMode = isDevMode();
 

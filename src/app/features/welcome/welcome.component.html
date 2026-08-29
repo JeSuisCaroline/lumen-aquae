@@ -7,12 +7,28 @@
     ></lumen-title>
 
     <div class="welcome-actions">
-      <lumen-button
-        id="start-story-button"
-        text="On a assez perdu de temps, c'est parti !"
-        icon="spark"
-        (clicked)="startStory()"
-      ></lumen-button>
+      @if (hasSave) {
+        <lumen-button
+          id="resume-story-button"
+          text="Je reprends là où j'en étais !"
+          icon="spark"
+          (clicked)="resumeStory()"
+        ></lumen-button>
+        <lumen-button
+          id="new-game-button"
+          text="Non, on efface tout et on recommence."
+          icon="rewind"
+          [compact]="true"
+          (clicked)="startNewGame()"
+        ></lumen-button>
+      } @else {
+        <lumen-button
+          id="start-story-button"
+          text="On a assez perdu de temps, c'est parti !"
+          icon="spark"
+          (clicked)="startStory()"
+        ></lumen-button>
+      }
       <lumen-button
         id="open-tuto-button"
         text="Oulala, pas si vite, explique-moi d'abord."
