@@ -12,6 +12,8 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 0.4rem 0.9rem 0.4rem 0.5rem;
   border-radius: 999px;
   border: 1px solid colors.$abyss-teal;
@@ -68,7 +70,9 @@ button {
 }
 
 .label {
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 @media (max-width: 480px) {
