@@ -37,6 +37,11 @@
                 "glob": "**/*",
                 "input": "src/app/data/FRAGMENTS",
                 "output": "/data/FRAGMENTS"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/app/data/DIVAGATIONS",
+                "output": "/data/DIVAGATIONS"
               }
             ],
             "styles": [

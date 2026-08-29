@@ -64,7 +64,7 @@ export function toAssetUrl(...segments: string[]): string {
   return `/${segments.map((segment) => encodeURIComponent(segment)).join('/')}`;
 }
 
-function splitFrontmatter(rawMarkdown: string): { frontmatterText: string | null; body: string } {
+export function splitFrontmatter(rawMarkdown: string): { frontmatterText: string | null; body: string } {
   const normalized = rawMarkdown.replace(/^﻿/, '');
   const lines = normalized.split(/\r?\n/);
 

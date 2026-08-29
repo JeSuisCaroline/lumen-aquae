@@ -18,5 +18,10 @@ export const routes: Routes = [
 	path: 'game-over',
 	loadComponent: () => import('../../features/game-over/game-over.component').then((m) => m.GameOverComponent),
   },
+  {
+	path: 'ramblings',
+	loadComponent: () =>
+	  import('../../features/ramblings-page/ramblings-page.component').then((m) => m.RamblingsPageComponent),
+  },
   { path: '**', redirectTo: 'welcome' },
 ];

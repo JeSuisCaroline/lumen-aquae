@@ -4,6 +4,7 @@ import { SPARK_ICON } from './spark.icon';
 import { HELP_ICON } from './help.icon';
 import { COIN_ICON } from './coin.icon';
 import { BOLT_ICON } from './bolt.icon';
+import { JESTER_ICON } from './jester.icon';
 
 export const ICON_REGISTRY = {
   rewind: REWIND_ICON,
@@ -12,6 +13,7 @@ export const ICON_REGISTRY = {
   help: HELP_ICON,
   coin: COIN_ICON,
   bolt: BOLT_ICON,
+  jester: JESTER_ICON,
 } as const;
 
 export type IconName = keyof typeof ICON_REGISTRY;

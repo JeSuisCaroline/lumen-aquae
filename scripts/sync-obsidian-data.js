@@ -4,7 +4,7 @@ const path = require('path');
 const VAULT_ROOT =
   process.env.LUMEN_OBSIDIAN_VAULT ?? "C:\\Users\\fabri\\Desktop\\L'Éclat et l'Ombre";
 const DEST_ROOT = path.join(__dirname, '..', 'src', 'app', 'data');
-const FOLDERS = ['Canvas from 12 07 26', 'FRAGMENTS'];
+const FOLDERS = ['Canvas from 12 07 26', 'FRAGMENTS', 'DIVAGATIONS'];
 
 let hadError = false;
 

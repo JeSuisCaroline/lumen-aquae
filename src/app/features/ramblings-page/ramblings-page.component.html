@@ -1,0 +1,31 @@
+<div class="ramblings-container">
+  <div class="ramblings-panel">
+    <lumen-flourish-heading>
+      <lumen-title
+        text="Les divagations du Fou"
+        level="h1"
+        description="Ce que Le Fou a bien voulu raconter de vrai, entre deux absurdités.">
+      </lumen-title>
+    </lumen-flourish-heading>
+
+    @if (ramblings().length === 0) {
+      <p class="ramblings-empty">Le Fou n'a encore rien radoté d'intéressant. Reviens plus tard.</p>
+    } @else {
+      <div class="ramblings-list">
+        @for (rambling of ramblings(); track rambling.id) {
+          <details class="ramblings-item">
+            <summary>{{ rambling.title }}</summary>
+            <p>{{ rambling.text }}</p>
+          </details>
+        }
+      </div>
+    }
+
+    <lumen-button
+      id="close-ramblings-button"
+      text="Fermer"
+      icon="rewind"
+      (clicked)="close()">
+    </lumen-button>
+  </div>
+</div>

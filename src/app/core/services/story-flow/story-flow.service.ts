@@ -10,6 +10,7 @@ import {
 } from '../../../shared/models/story-flow.model';
 import { extractFragmentName, parseCanvas, parseFragmentMarkdown, toAssetUrl } from './story-flow.parser';
 import { PlayerStateService } from '../player-state/player-state.service';
+import { RamblingsService } from '../ramblings/ramblings.service';
 
 interface LoadedFragment {
   name: string;
@@ -24,6 +25,7 @@ interface LoadedFragment {
 export class StoryFlowService {
   private readonly http = inject(HttpClient);
   private readonly playerState = inject(PlayerStateService);
+  private readonly ramblings = inject(RamblingsService);
 
   private readonly canvasUrl = toAssetUrl('data', 'Canvas from 12 07 26', "L'histoire.canvas");
   private readonly fragmentsFolder = ['data', 'FRAGMENTS'];
@@ -54,6 +56,7 @@ export class StoryFlowService {
     }
 
     this.playerState.applyEffects(fragment.frontmatter);
+    this.ramblings.applyEffects(fragment.frontmatter);
 
     if (fragment.kind === 'routing') {
       this.routeFromRoutingFragment(fragment);
@@ -68,6 +71,7 @@ export class StoryFlowService {
       throw new Error("Aucun fragment de départ n'a été identifié dans le canvas.");
     }
     this.playerState.reset();
+    this.ramblings.reset();
     this.goToFragment(this.startFragmentName);
   }
 

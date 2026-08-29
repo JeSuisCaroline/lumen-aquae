@@ -4,6 +4,7 @@ import { type Choice, type Step } from '../../../shared/models/game-step.model';
 import { type RiddleFrontmatter, type Fragment } from '../../../shared/models/story-flow.model';
 import { StoryFlowService } from '../story-flow/story-flow.service';
 import { PlayerStateService } from '../player-state/player-state.service';
+import { RamblingsService } from '../ramblings/ramblings.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +12,16 @@ import { PlayerStateService } from '../player-state/player-state.service';
 export class GameService {
   private readonly storyFlow = inject(StoryFlowService);
   private readonly playerState = inject(PlayerStateService);
+  private readonly ramblings = inject(RamblingsService);
   private readonly router = inject(Router);
 
   readonly isReady = this.storyFlow.canvasLoaded;
   readonly florins = this.playerState.florins;
   readonly hopopops = this.playerState.hopopops;
   readonly fragmentNames = this.storyFlow.fragmentNames;
+  readonly ramblingsCount = this.ramblings.totalCount;
+  readonly hasUnreadRambling = this.ramblings.hasUnread;
+  readonly ramblingsList = this.ramblings.ramblings;
   readonly currentStep = computed<Step>(() => this.mapFragmentToStep(this.storyFlow.currentFragment()));
 
   constructor() {
@@ -31,6 +36,10 @@ export class GameService {
 
   public restart(): void {
     this.storyFlow.restartStory();
+  }
+
+  public markRamblingsRead(): void {
+    this.ramblings.markAllRead();
   }
 
   public jumpToFragment(name: string): void {

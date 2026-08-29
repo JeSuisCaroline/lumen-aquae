@@ -1,4 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
 .title {
+  flex: 0 0 auto;
   margin: 0 0 0.5rem 0;
   font-weight: 600;
   color: #333;
@@ -35,6 +43,10 @@ h6.title {
 }
 
 .description {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   margin: 0.5rem 0 0 0;
   color: #222;
   line-height: 1.6;

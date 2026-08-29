@@ -26,6 +26,7 @@ export interface CanvasDocument {
 export interface ResourceEffects {
   FLO?: number;
   HOP?: number;
+  RAMBLING?: string;
 }
 
 export interface RiddleAnswer {

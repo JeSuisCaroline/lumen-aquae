@@ -1,7 +1,15 @@
 .game-container {
+  height: 100vh;
+  height: 100dvh;
   padding: 16px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  overflow: hidden;
+}
+
+lumen-header {
+  flex: 0 0 auto;
 }
 
 .mode {
@@ -20,8 +28,23 @@
   border-radius: 12px;
   padding: 12px;
   background: rgba(255, 255, 255, 0.6);
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+lumen-inventory {
+  flex: 0 0 auto;
+}
+
+lumen-step {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
 }
 
 .debug {

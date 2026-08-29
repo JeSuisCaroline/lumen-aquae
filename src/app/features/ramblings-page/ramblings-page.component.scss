@@ -1,0 +1,78 @@
+@use 'sass:color';
+@use '../../shared/styles/colors' as colors;
+
+.ramblings-container {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 60%),
+    linear-gradient(
+      180deg,
+      color.scale(colors.$lumen-violet, $lightness: 75%, $saturation: -20%) 0%,
+      color.scale(colors.$lumen-blue, $lightness: 70%, $saturation: -25%) 100%
+    );
+}
+
+.ramblings-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 640px;
+  width: 100%;
+  text-align: center;
+}
+
+.ramblings-empty {
+  font-style: italic;
+  opacity: 0.75;
+  margin: 0;
+}
+
+.ramblings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.ramblings-item {
+  border-radius: 16px;
+  padding: 12px 20px;
+  border: 1px solid colors.$abyss-teal;
+  background: color.scale(colors.$lumen-violet, $lightness: 78%, $saturation: -15%);
+  color: colors.$abyss-teal;
+
+  summary {
+    cursor: pointer;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '▸';
+      display: inline-block;
+      width: 1em;
+      margin-right: 0.4rem;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  p {
+    margin: 0.75rem 0 0 0;
+    line-height: 1.6;
+  }
+}

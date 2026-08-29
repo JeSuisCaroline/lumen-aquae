@@ -48,6 +48,7 @@ Quand tu agis en tant qu'agent Copilot sur ce projet :
 ### Vision
 Webapp interactive pour un **jeu de piste géolocalisé à 2 joueurs** de type "Vous êtes le héros" avec :
 - **Deux protagonistes** : Luce (magicienne) et Escur (voleur)
+- **Personnage récurrent (4e mur)** : Le Fou, un vagabond qui fait le lien entre la fiction (Aethelis) et la réalité historique d'Aix-en-Provence — voir section dédiée plus bas
 - **Arborescences d'histoires entrecroisées** : chemins parallèles et points de convergence possibles
 - **Énigmes** : prototypes d'énigmes prévus (le système narratif est en cours de construction)
 - **Système de jeu** : Inventaire, Florins (monnaie), aptitudes par classe
@@ -110,7 +111,8 @@ Chaque réponse porte directement sa **destination** (nom du fragment vers leque
 - `src/app/core/services/player-state/player-state.service.ts` (`PlayerStateService`, anciennement `LuceStateService`) : possède exclusivement l'état du joueur — Signals `florins`/`Hopopops`/`score`, `applyEffects(effects)` (Florins/Hopopops, appliqué par `StoryFlowService.goToFragment()` à chaque fragment atteint), `incrementScore(amount)`/`resetScore()` (score des énigmes, appelés par `submitRiddleAnswer`/`readTrackedVariable`/`resetTrackedVariable`), et `reset()` (remet les trois à leurs valeurs initiales, appelé par `restartStory()`). Voir section Florins & Hopopops ci-dessous.
 - `src/app/core/services/game/game.service.ts` (`GameService`) : couche de présentation au-dessus de `StoryFlowService` **et** `PlayerStateService` — mappe `Fragment` → `Step` (`mapFragmentToStep`) et `outgoingChoices`/`answers` → `Choice[]` (`mapFragmentChoices`, c'est ici que le fallback "Continuer" est appliqué).
 - Pas de fichier de test pour ces services pour l'instant (demandé explicitement).
-- `angular.json` expose désormais `src/app/data/Canvas from 12 07 26` et `src/app/data/FRAGMENTS` comme assets statiques (`/data/...`), sans quoi `HttpClient` recevrait des 404.
+- `angular.json` expose désormais `src/app/data/Canvas from 12 07 26`, `src/app/data/FRAGMENTS` et `src/app/data/DIVAGATIONS` comme assets statiques (`/data/...`), sans quoi `HttpClient` recevrait des 404.
+- `npm run sync-data` (`scripts/sync-obsidian-data.js`) recopie ces trois dossiers depuis le vault Obsidian (`LUMEN_OBSIDIAN_VAULT`, ou le chemin par défaut codé en dur dans le script) vers `src/app/data/` — à relancer après toute modification côté Obsidian pour que le repo (et donc l'app) reflète le contenu à jour.
 
 ✅ **`GameService` (`core/services/game/game.service.ts`) est branché sur `StoryFlowService`/`PlayerStateService`** : il expose `isReady`/`florins`/`Hopopops`/`currentStep`, et délègue la navigation (`goToStep`, `restart`) à `goToFragment`/`submitRiddleAnswer`/`restartStory`. L'ancien prototype statique (`SCENARIO`, `players.luce`/`players.escur`, `sharedFlags`) n'est plus utilisé (fichier `data/scenario.ts` supprimé).
 
@@ -163,6 +165,67 @@ L'effet s'applique **une fois, dès que le joueur atteint le fragment** (y compr
 
 ---
 
+## 🃏 LE FOU & LES « DIVAGATIONS DU FOU »
+
+### Concept
+**Le Fou** est un vagabond excentrique, personnage récurrent (pas un protagoniste jouable), qui **voit le "4e mur"** : il sait que Luce évolue dans une histoire, et connaît le vrai nom et la vraie histoire des lieux qu'elle traverse (Aethelis = Aix-en-Provence, transposée dans un monde médiéval-fantastique). Personne ne le prend au sérieux — Luce le tolère, lève les yeux au ciel, l'écoute parfois avec une patience amusée, mais ne le croit jamais. Le ressort comique : son discours est **confus, décousu, plein de digressions absurdes**, mais le **contenu factuel qu'il énonce est toujours vrai** (histoire réelle d'Aix-en-Provence) — jamais l'inverse (⚠️ ne jamais lui faire dire quelque chose de faux sur l'histoire réelle de la ville, même noyé dans la confusion).
+
+Son rôle produit : faire le pont entre l'univers imaginaire de Luce et la réalité historique d'Aix-en-Provence, pour donner aux joueurs qui le souhaitent un contenu touristique/historique réel sur les lieux traversés pendant le jeu.
+
+### Première apparition (narrative, validée)
+Juste après `Fin_Prologue`, alors que Luce revient vers la Fontaine de la Rotonde (elle doit reprendre son chemin vers chez son oncle Samantis), Le Fou l'aborde pour la première fois. Dialogue encore en cours d'intégration dans Obsidian par l'auteur — cf. `docs/CONTEXTE_HISTOIRE_CLAUDE_MOBILE.md` pour le texte de référence une fois stabilisé, et le dossier `FRAGMENTS/` une fois le(s) fragment(s) créé(s).
+
+### ✅ Mécanique des « Divagations » (implémentée)
+Une **Divagation** est un petit contenu historique/touristique réel, associé à un lieu réel croisé dans l'histoire, débloqué quand le joueur atteint un fragment donné.
+
+⚠️ **Convention de nommage** : "Divagation" reste le nom du concept en français (texte narratif, titres de section, UI joueur). Côté technique (noms de classes, fichiers, champs de frontmatter, variables, pseudo-code), on utilise sa traduction anglaise **Rambling** — c'est délibéré, ne pas les faire converger.
+
+**Deux dossiers séparés dans Obsidian, au même niveau que `Canvas from 12 07 26`** :
+- `FRAGMENTS/` : comme avant, l'histoire elle-même.
+- `DIVAGATIONS/` : une note par divagation, nommée exactement comme son `id` (ex. `fontaine-rotonde.md`). Contenu = un objet JSON `{ "title": "...", "text": "..." }`, avec ou sans les délimiteurs `---` autour (Obsidian a tendance à en rajouter automatiquement via son panneau "Properties" — le parseur gère les deux cas, cf. `splitFrontmatter` réutilisé). Ni `id` (déjà dans le nom de fichier) ni `---{...}---` obligatoire : juste le JSON.
+
+**Frontmatter d'un fragment** : le champ `RAMBLING` (ajouté à `ResourceEffects`, `shared/models/story-flow.model.ts`) est une **chaîne = l'id de la divagation**, pas un objet — disponible sur n'importe quel fragment (`standard`/`riddle`/`routing`), cohabite avec `FLO`/`HOP` dans le même JSON :
+```
+---
+{
+  "RAMBLING": "fontaine-rotonde"
+}
+---
+Texte affiché au joueur (inchangé).
+```
+Et dans `DIVAGATIONS/fontaine-rotonde.md` :
+```
+{
+  "title": "La Fontaine de la Rotonde",
+  "text": "Contenu historique réel affiché sur la page « Les divagations du Fou »."
+}
+```
+- L'`id` (nom de fichier) sert de clé de dédoublonnage : si le joueur repasse par un fragment déjà traversé (ou réutilise le même `id` sur un autre fragment), la divagation n'est chargée/ajoutée qu'une seule fois et le compteur n'est pas ré-incrémenté.
+- `title` / `text` restent en français, comme tout le texte narratif — seules les clés JSON (`RAMBLING`, `title`, `text`) sont en anglais.
+
+**Architecture** :
+- `src/app/core/services/ramblings/ramblings.parser.ts` : `parseRamblingMarkdown(raw, id)` — réutilise `splitFrontmatter` (exporté depuis `story-flow.parser.ts`) pour tolérer un éventuel `---{...}---`, puis `JSON.parse`.
+- `src/app/core/services/ramblings/ramblings.service.ts` (`RamblingsService`) : contrairement aux fragments (préchargés via le canvas), les divagations sont chargées **à la demande** — `applyEffects(effects)` lit `effects.RAMBLING` (l'id) et, s'il n'est pas déjà connu ou en cours de chargement (Set `pendingIds`, anti-doublon sur requêtes concurrentes), déclenche un `HttpClient.get` vers `/data/DIVAGATIONS/<id>.md`. Une fois résolu : ajout à la liste (Signal `ramblings`), incrément du compteur non-lu. Expose aussi `totalCount` (computed), `hasUnread` (computed), `markAllRead()`, `reset()` (vide la liste, le compteur non-lu, **et** `pendingIds`).
+- `StoryFlowService.goToFragment()` appelle `ramblings.applyEffects(fragment.frontmatter)` juste après `playerState.applyEffects(...)` — donc une Divagation peut se débloquer sur n'importe quel fragment atteint, y compris un `RESULT_` traversé automatiquement.
+- **Reset** : `RamblingsService.reset()` est appelé par `StoryFlowService.restartStory()`, exactement comme `PlayerStateService.reset()` (Florins/Hopopops/score) — donc le bouton **"Retour au début"** (header) et l'écran **Game Over** ("Retour à l'accueil", qui appelle aussi `restart()`) remettent les divagations à zéro (liste vidée, compteur à 0). Naviguer entre routes (ex. ouvrir `/ramblings` puis "Fermer") ne réinitialise rien, les services sont `providedIn: 'root'`. Un rechargement complet de page (F5, URL tapée directement) réinitialise tout l'état par accident, faute de persistance (`localStorage`, toujours pas implémenté — cf. plus bas).
+- `GameService` expose `ramblingsCount`, `hasUnreadRambling` et `ramblingsList` (= `RamblingsService.ramblings`, utilisé par la page), et `markRamblingsRead()`.
+
+**UI — icône, compteur, message (dans `HeaderComponent`, visible uniquement sur `/game`)** :
+- `FouIconComponent` (`lumen-fou-icon`, `src/app/features/fou-icon/`) : badge circulaire violet avec une icône placeholder (`jester` dans `ICON_REGISTRY` — à remplacer par un vrai portrait du Fou une fois l'asset fourni par l'utilisateur), intégré dans `header-left`. Inputs : `totalCount`, `hasNewRambling`. Cliquer dessus (`onFouIconClick()` dans `header.component.ts`) navigue vers `/ramblings`.
+  - Bulle dorée en bas à droite de l'icône = `totalCount` (nombre total de Divagations débloquées depuis le début de la partie ; reste affiché même après lecture).
+  - Message « Divagation du Fou disponible ! » à droite de l'icône + halo doré pulsant (`fou-icon-pulse`, masqué sous 400px de large) tant qu'il existe au moins une Divagation **non lue** (`hasNewRambling`).
+
+**UI — page « Les divagations du Fou » (`/ramblings`)** :
+- `RamblingsPageComponent` (`lumen-ramblings-page`, `src/app/features/ramblings-page/`) : dans son constructeur, appelle `gameService.markRamblingsRead()` (donc le badge "non lu" s'éteint dès l'ouverture de la page, pas au clic sur l'icône).
+- Liste `ramblings()` affichée en **accordéons natifs** (`<details>`/`<summary>`, pas de JS de gestion d'état — un `title`/`text` par item). Message humoristique si la liste est vide.
+- Bouton **"Fermer"** (icône `rewind`, même convention que "Retour" sur `/tuto` ou "Retour à l'accueil" sur `/game-over`) → `router.navigateByUrl('/game')`. L'état du jeu (Florins, Hopopops, position dans l'histoire) est préservé puisque les services sont globaux — ce n'est pas un restart.
+
+### 🔲 Reste à faire (ne pas anticiper sans consigne explicite)
+- Le vrai portrait du Fou (asset image à venir côté utilisateur) pour remplacer l'icône SVG placeholder.
+- Le contenu réel des Divagations à écrire fragment par fragment au fur et à mesure de l'écriture de l'histoire (cf. `docs/CONTEXTE_HISTOIRE_CLAUDE_MOBILE.md`) — une note dans `DIVAGATIONS/` par lieu réel.
+
+---
+
 ## 🧪 MODE DEV vs PROD (outils de debug)
 
 Certains éléments de l'UI sont conditionnés par `isDevMode()` (natif Angular, importé de `@angular/core`) : ils n'existent **que** quand l'app tourne en configuration `development`, jamais en `production`.
@@ -200,6 +263,7 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 | `/tuto` | `TutoComponent` | Vide pour l'instant, juste un bouton retour vers `/welcome` |
 | `/game` | `GameComponent` | Le jeu à proprement parler (header + inventaire + step) |
 | `/game-over` | `GameOverComponent` | Affiché automatiquement quand `Hopopops` atteint 0 |
+| `/ramblings` | `RamblingsPageComponent` | Page "Les divagations du Fou" (accordéons), accessible depuis l'icône du Fou sur `/game`, "Fermer" ramène sur `/game` sans reset |
 | `**` | — | Redirige vers `/welcome` |
 
 ## 🚀 DÉPLOIEMENT VERCEL
@@ -238,6 +302,8 @@ Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les c
 - `$lumen-blue` (bleu principal), `$lumen-gold` (or), `$abyss-teal` (bordures/texte sombre), `$lumen-violet` et `$lumen-danger` (accents secondaires, ex. cartes du tuto, écran game-over).
 - ⚠️ **Ne jamais coder une couleur en dur dans un composant** — toujours `@use '.../shared/styles/colors' as colors;` puis `colors.$lumen-blue` etc. Pour des variations (plus clair/foncé), utiliser `color.scale(colors.$xxx, $lightness: ...)`, jamais une nouvelle valeur hexa ad hoc.
 - Motifs visuels établis à réutiliser (ne pas réinventer) : boutons/badges en pilule avec dégradé bleu/or, cartes "parchemin" à bordure colorée (`tuto-card`), fioritures dorées autour d'un titre (`lumen-flourish-heading`), fond de page en dégradé + motif SVG décoratif discret en arrière-plan (fontaine sur `/welcome`, éclair éteint sur `/game-over`).
+
+⚠️ **`FlourishHeadingComponent`/`TitleComponent` sont partagés entre des pages à besoins de hauteur très différents** (`/welcome`, `/tuto`, `/game-over`, `/ramblings` : hauteur naturelle au contenu ; `/game` : doit grandir pour remplir l'espace dispo et laisser le texte défiler en interne, cf. `step.component.scss`). La croissance se fait **uniquement via `flex: 1 1 auto` accordé par le composant consommateur** sur le tag hôte (ex. `lumen-flourish-heading { flex: 1 1 auto; min-height: 0; }` dans `step.component.scss`) — **jamais via un `height: 100%` écrit dans le composant partagé lui-même** : un `height: 100%` sur `:host`/`.flourish-heading` a déjà cassé silencieusement le rendu de `/tuto` (page blanche) la première fois, un contexte flex sans croissance externe le résout de façon imprévisible plutôt que de simplement l'ignorer.
 
 ## 🎨 CONVENTIONS DE CODE
 
@@ -319,5 +385,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v2.5 | Maj: 2026-07-26**
+**CLAUDE.md v2.9 | Maj: 2026-08-29**
 

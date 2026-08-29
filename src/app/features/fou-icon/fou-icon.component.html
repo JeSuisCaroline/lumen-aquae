@@ -1,0 +1,18 @@
+<div class="fou-icon-wrapper">
+  <button
+    type="button"
+    class="fou-icon"
+    [class.fou-icon--highlighted]="hasNewRambling"
+    (click)="onClick()"
+    title="Les divagations du Fou"
+    aria-label="Les divagations du Fou">
+    <lumen-icon name="jester" size="1.3rem"></lumen-icon>
+    @if (totalCount > 0) {
+      <span class="fou-icon__count" aria-hidden="true">{{ totalCount }}</span>
+    }
+  </button>
+
+  @if (hasNewRambling) {
+    <span class="fou-icon__message">Divagation du Fou disponible !</span>
+  }
+</div>

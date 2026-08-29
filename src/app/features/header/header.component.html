@@ -1,5 +1,11 @@
 <header class="game-header">
-  <div class="header-left"></div>
+  <div class="header-left">
+    <lumen-fou-icon
+      [totalCount]="ramblingsCount()"
+      [hasNewRambling]="hasNewRambling()"
+      (clicked)="onFouIconClick()">
+    </lumen-fou-icon>
+  </div>
   <div class="header-center">
     <lumen-player-status></lumen-player-status>
   </div>
