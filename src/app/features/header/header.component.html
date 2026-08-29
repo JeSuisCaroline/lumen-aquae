@@ -3,6 +3,7 @@
     <lumen-fou-icon
       [totalCount]="ramblingsCount()"
       [hasNewRambling]="hasNewRambling()"
+      [message]="ramblingMessage"
       (clicked)="onFouIconClick()">
     </lumen-fou-icon>
   </div>
@@ -19,4 +20,7 @@
       (clicked)="onRestart()">
     </lumen-button>
   </div>
+  @if (hasNewRambling()) {
+    <div class="header-message">{{ ramblingMessage }}</div>
+  }
 </header>

@@ -11,6 +11,7 @@ import { IconComponent } from '../../shared/ui/icon/icon.component';
 export class FouIconComponent {
   @Input() totalCount = 0;
   @Input() hasNewRambling = false;
+  @Input() message = 'Divagation du Fou disponible !';
   @Output() clicked = new EventEmitter<void>();
 
   onClick(): void {

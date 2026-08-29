@@ -18,6 +18,7 @@ export class HeaderComponent {
 
   readonly ramblingsCount = this.gameService.ramblingsCount;
   readonly hasNewRambling = this.gameService.hasUnreadRambling;
+  readonly ramblingMessage = 'Divagation du Fou disponible !';
 
   onRestart(): void {
     this.gameService.restart();
