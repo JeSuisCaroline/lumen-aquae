@@ -261,7 +261,7 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 |---|---|---|
 | `/welcome` (défaut : `''` y redirige) | `WelcomeComponent` | Écran d'accueil : titre, texte d'intro, boutons "commencer" / "tuto" |
 | `/tuto` | `TutoComponent` | Vide pour l'instant, juste un bouton retour vers `/welcome` |
-| `/game` | `GameComponent` | Le jeu à proprement parler (header + inventaire + step) |
+| `/game` | `GameComponent` | Le jeu à proprement parler (header + step) |
 | `/game-over` | `GameOverComponent` | Affiché automatiquement quand `Hopopops` atteint 0 |
 | `/ramblings` | `RamblingsPageComponent` | Page "Les divagations du Fou" (accordéons), accessible depuis l'icône du Fou sur `/game`, "Fermer" ramène sur `/game` sans reset |
 | `**` | — | Redirige vers `/welcome` |
@@ -326,7 +326,7 @@ Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les c
 
 ### Composants
 - **Standalone** : `standalone: true` obligatoire
-- **Selector prefix** : `lumen-` (ex: `lumen-step`, `lumen-button`, `lumen-inventory`)
+- **Selector prefix** : `lumen-` (ex: `lumen-step`, `lumen-button`, `lumen-fou-icon`)
 - **Chaque composant** : 4 fichiers (ts, html, scss, spec.ts)
 
 ### Services
@@ -343,7 +343,7 @@ Charte graphique : **bleu et or**, sur fond médiéval-fantastique. Toutes les c
 
 ### 🔲 À Développer
 - **Énigmes** : Saisie réponses + validation
-- **Inventaire UI** : Affichage/achat d'objets (les Florins existent déjà, l'inventaire d'objets reste à faire)
+- **Inventaire UI** : Affichage/achat d'objets (les Florins existent déjà, l'inventaire d'objets reste à faire). ⚠️ L'ancien placeholder `InventoryComponent`/`lumen-inventory` (un `<div>` vide affiché entre le header et l'encadré du fragment sur `/game`) a été supprimé — vide visuellement mais toujours stylé, il ressemblait à un bandeau gris parasite. Rien ne réserve donc plus d'emplacement pour l'inventaire dans l'UI actuelle ; son futur emplacement est à décider au moment de l'implémenter, pas forcément à cet endroit-là.
 - **Conséquences dynamiques** : Crédibilité impact story
 - **Persistance** : localStorage pour sauvegarde partie
 - **Contenu du tuto** : `TutoComponent` est vide pour l'instant
@@ -396,5 +396,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v3.0 | Maj: 2026-08-29**
+**CLAUDE.md v3.1 | Maj: 2026-08-29**
 
