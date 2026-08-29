@@ -75,4 +75,21 @@
     margin: 0.75rem 0 0 0;
     line-height: 1.6;
   }
+
+  &__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 0.75rem;
+    border-radius: 10px;
+    border: 1px solid colors.$abyss-teal;
+  }
+
+  &__credit {
+    display: block;
+    margin: 0.35rem 0 0 0;
+    font-size: 0.75rem;
+    font-style: italic;
+    opacity: 0.7;
+  }
 }

@@ -204,8 +204,8 @@ Et dans `DIVAGATIONS/fontaine-rotonde.md` :
 - `title` / `text` restent en français, comme tout le texte narratif — seules les clés JSON (`RAMBLING`, `title`, `text`) sont en anglais.
 
 **Architecture** :
-- `src/app/core/services/ramblings/ramblings.parser.ts` : `parseRamblingMarkdown(raw, id)` — réutilise `splitFrontmatter` (exporté depuis `story-flow.parser.ts`) pour tolérer un éventuel `---{...}---`, puis `JSON.parse`.
-- `src/app/core/services/ramblings/ramblings.service.ts` (`RamblingsService`) : contrairement aux fragments (préchargés via le canvas), les divagations sont chargées **à la demande** — `applyEffects(effects)` lit `effects.RAMBLING` (l'id) et, s'il n'est pas déjà connu ou en cours de chargement (Set `pendingIds`, anti-doublon sur requêtes concurrentes), déclenche un `HttpClient.get` vers `/data/DIVAGATIONS/<id>.md`. Une fois résolu : ajout à la liste (Signal `ramblings`), incrément du compteur non-lu. Expose aussi `totalCount` (computed), `hasUnread` (computed), `markAllRead()`, `reset()` (vide la liste, le compteur non-lu, **et** `pendingIds`).
+- `src/app/core/services/ramblings/ramblings.parser.ts` : `parseRamblingMarkdown(raw, id)` — réutilise `splitFrontmatter` (exporté depuis `story-flow.parser.ts`) pour tolérer un éventuel `---{...}---`, puis `JSON.parse`. Ne lit que `title`/`text` — les images ne passent **jamais** par ce parseur ni par le contenu Obsidian (cf. section dédiée plus bas).
+- `src/app/core/services/ramblings/ramblings.service.ts` (`RamblingsService`) : contrairement aux fragments (préchargés via le canvas), les divagations sont chargées **à la demande** — `applyEffects(effects)` lit `effects.RAMBLING` (l'id) et, s'il n'est pas déjà connu ou en cours de chargement (Set `pendingIds`, anti-doublon sur requêtes concurrentes), déclenche un `HttpClient.get` vers `/data/DIVAGATIONS/<id>.md` **en parallèle** (`forkJoin`) d'un fetch du manifest d'images (mis en cache via `shareReplay(1)`, un seul chargement pour toute la session). Une fois les deux résolus : fusion (`withImage()`), ajout à la liste (Signal `ramblings`), incrément du compteur non-lu. Expose aussi `totalCount` (computed), `hasUnread` (computed), `markAllRead()`, `reset()` (vide la liste, le compteur non-lu, **et** `pendingIds`).
 - `StoryFlowService.goToFragment()` appelle `ramblings.applyEffects(fragment.frontmatter)` juste après `playerState.applyEffects(...)` — donc une Divagation peut se débloquer sur n'importe quel fragment atteint, y compris un `RESULT_` traversé automatiquement.
 - **Reset** : `RamblingsService.reset()` est appelé par `StoryFlowService.restartStory()`, exactement comme `PlayerStateService.reset()` (Florins/Hopopops/score) — donc le bouton **"Retour au début"** (header) et l'écran **Game Over** ("Retour à l'accueil", qui appelle aussi `restart()`) remettent les divagations à zéro (liste vidée, compteur à 0). Naviguer entre routes (ex. ouvrir `/ramblings` puis "Fermer") ne réinitialise rien, les services sont `providedIn: 'root'`. Un rechargement complet de page (F5, URL tapée directement) réinitialise tout l'état par accident, faute de persistance (`localStorage`, toujours pas implémenté — cf. plus bas).
 - `GameService` expose `ramblingsCount`, `hasUnreadRambling` et `ramblingsList` (= `RamblingsService.ramblings`, utilisé par la page), et `markRamblingsRead()`.
@@ -217,12 +217,39 @@ Et dans `DIVAGATIONS/fontaine-rotonde.md` :
 
 **UI — page « Les divagations du Fou » (`/ramblings`)** :
 - `RamblingsPageComponent` (`lumen-ramblings-page`, `src/app/features/ramblings-page/`) : dans son constructeur, appelle `gameService.markRamblingsRead()` (donc le badge "non lu" s'éteint dès l'ouverture de la page, pas au clic sur l'icône).
-- Liste `ramblings()` affichée en **accordéons natifs** (`<details>`/`<summary>`, pas de JS de gestion d'état — un `title`/`text` par item). Message humoristique si la liste est vide.
+- Liste `ramblings()` affichée en **accordéons natifs** (`<details>`/`<summary>`, pas de JS de gestion d'état — un `title`/`text` par item, plus `image`/`imageCredit` si présents : `<img>` avec crédit en `<small>` juste en dessous). Message humoristique si la liste est vide.
 - Bouton **"Fermer"** (icône `rewind`, même convention que "Retour" sur `/tuto` ou "Retour à l'accueil" sur `/game-over`) → `router.navigateByUrl('/game')`. L'état du jeu (Florins, Hopopops, position dans l'histoire) est préservé puisque les services sont globaux — ce n'est pas un restart.
 
+### ✅ Images des divagations (implémentée) — jamais via Obsidian
+
+⚠️ **Décision structurante** : l'image et son crédit d'une divagation ne font **jamais** partie du contenu `DIVAGATIONS/<id>.md` sur Obsidian. L'utilisateur a explicitement rejeté cette approche (2026-08-29) — Obsidian doit rester uniquement du texte narratif, sans lui imposer un aller-retour pour chaque image. Tout se passe côté code, par convention de nommage sur l'`id`.
+
+**Mécanisme** :
+- `public/divagations/manifest.json` : un seul fichier JSON, maintenu **exclusivement par l'assistant IA** (jamais par sync Obsidian), qui associe un id de divagation à ses métadonnées d'image :
+  ```json
+  {
+    "fontaine-rotonde": {
+      "credit": "Photo : Rainbow0413 (Wikimedia Commons, CC BY-SA 3.0)"
+    }
+  }
+  ```
+  Type : `RamblingImageManifest` (`shared/models/rambling.model.ts`), entrées `RamblingImageManifestEntry { credit?: string; ext?: string }` — `ext` optionnel, défaut `"jpg"` (permet un format différent si jamais nécessaire).
+- Le fichier image lui-même vit dans `public/divagations/<id>.<ext>` (ex. `public/divagations/fontaine-rotonde.jpg`), servi à `/divagations/<id>.<ext>` — même convention que `favicon.ico`/`icons/` dans `public/`.
+- `RamblingsService` charge `manifest.json` une seule fois (`imageManifest$`, `shareReplay(1)`) et l'associe automatiquement à chaque divagation débloquée (`withImage()`) : si l'id est présent dans le manifest → `image`/`imageCredit` sont renseignés sur l'objet `Rambling` ; sinon, la divagation s'affiche normalement sans image, aucune erreur.
+- ⚠️ **Piège vécu** : si `manifest.json` (ou tout nouveau fichier sous `public/`) est ajouté pendant qu'un `ng serve` tourne déjà, le serveur peut continuer à répondre 404 dessus tant qu'il n'a pas été redémarré — son scan des assets statiques de `public/` peut rester périmé. Redémarrer `npm start` si un fichier fraîchement ajouté à `public/` renvoie 404 en dev.
+
+**Workflow pour ajouter une image** (jamais initié sans validation utilisateur à chaque étape) :
+1. Chercher des candidats libres de droits (Wikimedia Commons en priorité — licence claire obligatoire : CC0, CC BY, CC BY-SA, domaine public).
+2. Proposer 2-4 candidats à l'utilisateur (description, résolution, licence, lien vers la page Commons) et attendre sa validation explicite avant de télécharger quoi que ce soit.
+3. Demander s'il faut créditer et sous quelle forme (sauf licence n'exigeant pas d'attribution).
+4. Télécharger dans `public/divagations/<id>.jpg`, mettre à jour `manifest.json`.
+5. Vérifier que `npx ng build` passe.
+
+✅ **Skill dédié** : `.claude/skills/add-divagation-image/SKILL.md`, invocable via `/add-divagation-image [id]` — automatise exactement ce protocole en 5 étapes ci-dessus.
+
 ### 🔲 Reste à faire (ne pas anticiper sans consigne explicite)
-- Le vrai portrait du Fou (asset image à venir côté utilisateur) pour remplacer l'icône SVG placeholder.
-- Le contenu réel des Divagations à écrire fragment par fragment au fur et à mesure de l'écriture de l'histoire (cf. `docs/CONTEXTE_HISTOIRE_CLAUDE_MOBILE.md`) — une note dans `DIVAGATIONS/` par lieu réel.
+- Le vrai portrait du Fou (asset image à venir côté utilisateur) pour remplacer l'icône SVG placeholder — différent des images de divagations, c'est l'icône du personnage lui-même dans le header.
+- Le contenu réel des Divagations (titre/texte) à écrire fragment par fragment au fur et à mesure de l'écriture de l'histoire (cf. `docs/CONTEXTE_HISTOIRE_CLAUDE_MOBILE.md`) — une note dans `DIVAGATIONS/` par lieu réel. Les images, elles, sont gérées séparément via `/add-divagation-image`, pas depuis Obsidian.
 
 ---
 
@@ -396,5 +423,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v3.1 | Maj: 2026-08-29**
+**CLAUDE.md v3.2 | Maj: 2026-08-29**
 

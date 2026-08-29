@@ -15,6 +15,12 @@
         @for (rambling of ramblings(); track rambling.id) {
           <details class="ramblings-item">
             <summary>{{ rambling.title }}</summary>
+            @if (rambling.image) {
+              <img class="ramblings-item__image" [src]="rambling.image" [alt]="rambling.title" />
+              @if (rambling.imageCredit) {
+                <small class="ramblings-item__credit">{{ rambling.imageCredit }}</small>
+              }
+            }
             <p>{{ rambling.text }}</p>
           </details>
         }

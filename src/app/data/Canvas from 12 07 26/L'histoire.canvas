@@ -21,7 +21,8 @@
 		{"id":"5f765c0d69fa7631","type":"text","text":"[[Résultat_Enigmes_Statues_LVL3 - Crédibilité totale]]","x":160,"y":-1072,"width":400,"height":85},
 		{"id":"057adb0619b9a68d","type":"text","text":"[[Résultat_Enigmes_statues_LVL0 - Crédibilité nulle]]","x":-1003,"y":-1190,"width":420,"height":50},
 		{"id":"2495c50230501515","type":"text","text":"[[Première rencontre avec le Fou]]","x":-384,"y":-735,"width":250,"height":95},
-		{"id":"ff91b0951c298d91","type":"text","text":"[[Les divagations]] ","x":-393,"y":-563,"width":250,"height":60}
+		{"id":"ff91b0951c298d91","type":"text","text":"[[Les divagations]] ","x":-393,"y":-563,"width":250,"height":60},
+		{"id":"f4fea31771ea3771","type":"text","text":"[[La Fontaine des 4 Dauphins]]","x":-384,"y":-360,"width":250,"height":60}
 	],
 	"edges":[
 		{"id":"f7d66288c3859928","fromNode":"78e4eef2c26a4274","fromSide":"bottom","toNode":"5819357970e78b7a","toSide":"top"},
@@ -49,6 +50,7 @@
 		{"id":"906f8bb5a1b4a25e","fromNode":"aa6e2b78dc253cb4","fromSide":"bottom","toNode":"5588359d37b338b2","toSide":"top"},
 		{"id":"d38d12a4ef350720","fromNode":"aa6e2b78dc253cb4","fromSide":"right","toNode":"5f765c0d69fa7631","toSide":"top"},
 		{"id":"2c6890ae1b84e5ba","fromNode":"5819357970e78b7a","fromSide":"bottom","toNode":"2495c50230501515","toSide":"top"},
-		{"id":"06b9aac5ccd7d276","fromNode":"2495c50230501515","fromSide":"bottom","toNode":"ff91b0951c298d91","toSide":"top"}
+		{"id":"06b9aac5ccd7d276","fromNode":"2495c50230501515","fromSide":"bottom","toNode":"ff91b0951c298d91","toSide":"top"},
+		{"id":"689299975628c084","fromNode":"ff91b0951c298d91","fromSide":"bottom","toNode":"f4fea31771ea3771","toSide":"top"}
 	]
 }
