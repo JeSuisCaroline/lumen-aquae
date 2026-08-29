@@ -268,7 +268,7 @@ Routing dans `src/app/core/routing/app.routes.ts` (lazy-loadées via `loadCompon
 
 ## 🚀 DÉPLOIEMENT VERCEL
 
-Aucune config Vercel n'est encore présente dans le repo (pas de `vercel.json`, pas de dossier `.vercel/`) — à créer/configurer lors du premier déploiement.
+✅ **Le projet est déjà déployé et connecté** : le dashboard Vercel est relié au repo GitHub (`origin` → `JeSuisCaroline/lumen-aquae`), branche `main`. Un simple `git push` sur `main` déclenche automatiquement un build + déploiement en production côté Vercel — pas besoin de la CLI `vercel` au quotidien. Pas de `vercel.json` ni de dossier `.vercel/` dans le repo (config par défaut du preset Angular, suffisante jusqu'ici).
 
 ### Procédure (première fois, via le dashboard Vercel)
 1. Pousser le repo sur GitHub/GitLab/Bitbucket (Vercel se connecte à un repo Git, pas à un dossier local).
@@ -288,13 +288,24 @@ vercel --prod
 Vercel détecte aussi automatiquement le projet Angular dans ce cas.
 
 ### Point d'attention : routing côté client
-L'app utilise le routing Angular (`/welcome`, `/tuto`, `/game`, `/game-over`) — un accès direct ou un rechargement sur une de ces URLs doit renvoyer `index.html` (sinon 404 côté serveur). Le preset Angular de Vercel gère normalement ça nativement ; si ce n'est pas le cas, ajouter un `vercel.json` à la racine :
+L'app utilise le routing Angular (`/welcome`, `/tuto`, `/game`, `/game-over`, `/ramblings`) — un accès direct ou un rechargement sur une de ces URLs doit renvoyer `index.html` (sinon 404 côté serveur). Le preset Angular de Vercel gère normalement ça nativement ; si ce n'est pas le cas, ajouter un `vercel.json` à la racine :
 ```json
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 **Toujours vérifier ce point après un déploiement** : ouvrir directement l'URL racine (`/`, celle utilisée par le lien/QR code partagé aux joueurs) plutôt que de naviguer depuis une autre page, et confirmer qu'elle charge bien `/welcome` plutôt qu'une 404. Le lien/QR code ne doit **jamais** pointer vers `/game` ou une autre route interne — toujours vers la racine.
+
+### ⚠️ Service Worker (PWA) : pourquoi "j'ai déployé mais je ne vois pas le changement" est normal
+
+L'app enregistre un Service Worker en production (`app.config.ts` → `provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode() })`, désactivé en dev). Sa config (`ngsw-config.json`) précache **agressivement** (`installMode: "prefetch"`) tout le JS/CSS/`index.html` dès la première visite — donc un navigateur qui a déjà ouvert l'app une fois continue de servir cette version tant que le SW n'a pas basculé sur la nouvelle, même après un rechargement classique.
+
+⚠️ **Piège à connaître pour le debug/QA** : les patterns de `ngsw-config.json` (`svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2` pour le groupe `"assets"`, JS/CSS/HTML pour `"app"`) ne couvrent **pas** les fichiers `.md` de `data/FRAGMENTS/`/`data/DIVAGATIONS/` — ceux-ci sont de simples requêtes `HttpClient`, jamais mis en cache par le SW. Résultat typique observé : après un déploiement, le **contenu narratif** (nouveaux fragments/divagations) apparaît instantanément, alors que le **code applicatif** (nouveaux composants/écrans) reste bloqué sur l'ancienne version. Ce n'est pas un déploiement raté — c'est le Service Worker qui sert encore l'ancien bundle JS depuis son cache.
+- Pour vérifier qu'un déploiement est réellement live : ouvrir le site en **navigation privée** (pas de SW préexistant), ou DevTools → Application → Service Workers → *"Update on reload"* + rechargement forcé (Ctrl+Shift+R — dans la plupart des navigateurs, un rechargement forcé contourne le SW actif pour cette navigation-là).
+
+✅ **Mise à jour automatique implémentée** : `AppUpdateService` (`src/app/core/services/app-update/app-update.service.ts`) s'abonne à `SwUpdate.versionUpdates`, filtre l'événement `VERSION_READY`, puis appelle `activateUpdate()` suivi d'un `document.location.reload()`. Câblé une seule fois, dans le constructeur d'`AppComponent` (`appUpdate.listenForUpdates()`). No-op silencieux si `swUpdate.isEnabled` est faux (donc rien ne se passe en dev).
+
+⚠️ **Choix assumé : rechargement 100% silencieux, sans bandeau de confirmation au joueur** — décision explicite de l'utilisateur (2026-08-29), en attendant l'implémentation d'un système de sauvegarde automatique (`localStorage`, cf. "🎯 FONCTIONNALITÉS À IMPLÉMENTER" → "Persistance", toujours pas fait). **Tant que cette sauvegarde n'existe pas, ce reload silencieux peut faire perdre la progression en cours** (Florins, Hopopops, position dans l'histoire, divagations débloquées — tout est en mémoire, rien n'est persisté) si une mise à jour est détectée en pleine partie. Ne pas "corriger" ça de sa propre initiative en ajoutant un bandeau de confirmation sans redemander — c'est un choix conscient, pas un oubli. En revanche, **le jour où la sauvegarde auto est implémentée, s'assurer qu'elle s'écrit avant (ou indépendamment de) ce reload**, pour que le silencieux redevienne réellement sans risque.
 
 ## 🎨 DESIGN GÉNÉRAL DE L'APP
 
@@ -385,5 +396,5 @@ Si le contexte du projet évolue (nouvelle règle, changement d'architecture, d�
 - ❌ **Ne modifie jamais ce fichier de ta propre initiative.**
 - ✅ **Demande-moi confirmation avant** de proposer une modification à `CLAUDE.md`.
 
-**CLAUDE.md v2.9 | Maj: 2026-08-29**
+**CLAUDE.md v3.0 | Maj: 2026-08-29**
 
